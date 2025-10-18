@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>P2P File Transfer Auto</title>
+  <title>P2P File Transfer Button</title>
   <style>body{font-family:system-ui,Segoe UI,Roboto,Arial;margin:18px;color:#111}button{margin:6px 0;padding:8px}</style>
   <script src="https://unpkg.com/simple-peer@9.11.1/simplepeer.min.js"></script>
 </head>
 <body>
-<h3>P2P File Transfer — automatique</h3>
-<p>Glisser le fichier et partager le lien. Le destinataire télécharge automatiquement.</p>
+<h3>P2P File Transfer — avec bouton</h3>
+<p>Émetteur : choisit un fichier et partage le lien. Destinataire : clique sur "Télécharger".</p>
 <input id="fileinput" type="file" />
 <div id="linkContainer" style="margin-top:12px"></div>
 <div id="recvContainer" style="margin-top:12px"></div>
@@ -59,7 +59,7 @@ fileInput.addEventListener('change', async e => {
   });
 });
 
-// Récepteur automatique
+// Récepteur avec bouton
 const params = new URLSearchParams(location.hash.replace('#','?'));
 if(params.has('offer')){
   const offerB64 = params.get('offer');
@@ -67,7 +67,10 @@ if(params.has('offer')){
   peer = new SimplePeer({initiator:false,trickle:false});
   let buffers=[];
   let fileMeta = {};
+  let downloadBtn;
+
   peer.on('signal', ans=>{console.log('Réponse prête')});
+
   peer.on('data', async d => {
     if(typeof d==='string'){ 
       try{
@@ -76,12 +79,21 @@ if(params.has('offer')){
           const total = buffers.reduce((s,b)=>s+b.byteLength,0);
           const tmp = new Uint8Array(total); let off=0; for(const b of buffers){ tmp.set(new Uint8Array(b), off); off+=b.byteLength; }
           const blob = new Blob([tmp]);
-          const a = document.createElement('a');
-          a.href = URL.createObjectURL(blob);
-          a.download = msg.name;
-          a.click();
+          if(!downloadBtn){
+            downloadBtn = document.createElement('button');
+            downloadBtn.textContent = `Télécharger ${msg.name}`;
+            downloadBtn.onclick = ()=>{
+              const a = document.createElement('a');
+              a.href = URL.createObjectURL(blob);
+              a.download = msg.name;
+              a.click();
+            };
+            recvContainer.appendChild(downloadBtn);
+          }
           const hash = await sha256(tmp.buffer);
-          recvContainer.innerHTML = `<p>Fichier reçu. Intégrité SHA256: ${hash===msg.sha256?'OK':'ÉCHEC'}</p>`;
+          const info = document.createElement('p');
+          info.textContent = `Intégrité SHA256: ${hash===msg.sha256?'OK':'ÉCHEC'}`;
+          recvContainer.appendChild(info);
         }
       } catch(e){}
     } else { buffers.push(d); }
