@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>P2P File Transfer (static)</title>
+  <style>body{font-family:system-ui,Segoe UI,Roboto,Arial;margin:18px;color:#111}button{margin:6px 0;padding:8px}textarea{width:100%;height:120px}</style>
+  <script src="https://unpkg.com/simple-peer@9.11.1/simplepeer.min.js"></script>
+</head>
+<body>
+<h3>P2P File Transfer — static (no backend)</h3>
+<p>Principe: pas de serveur. Signalisation manuelle (copier/coller ou lien). Gratuit sur github.io.</p>
+<div>
+  <label><input type="radio" name="role" value="send" checked> Émetteur (envoie fichier)</label>
+  <label><input type="radio" name="role" value="recv"> Récepteur (ouvre lien)</label>
+</div>
+<hr>
+<div id="send-area">
+  <input id="fileinput" type="file" />
+  <div id="meta"></div>
+  <button id="createOffer">Créer offre & générer lien</button>
+  <div>
+    <p>Lien à partager (copie automatique possible):</p>
+    <input id="offerLink" style="width:100%" readonly />
+  </div>
+  <p>Si le destinataire ne peut pas ouvrir le lien, copie manuelle de l'offre:</p>
+  <textarea id="offerText" readonly></textarea>
+  <p>Colle ici la réponse reçue du destinataire:</p>
+  <textarea id="answerInput" placeholder="colle la réponse ici"></textarea>
+  <button id="applyAnswer">Appliquer réponse</button>
+  <div id="sendProgress"></div>
+</div>
+
+<div id="recv-area" style="display:none">
+  <p>Si tu as ouvert un lien avec une offre, il devrait apparaître ici.</p>
+  <p>Offre détectée (ou colle ici l'offre):</p>
+  <textarea id="remoteOffer"></textarea>
+  <button id="createAnswer">Créer réponse (copier et renvoyer)</button>
+  <p>Réponse (à renvoyer à l'émetteur):</p>
+  <textarea id="answerText" readonly></textarea>
+  <div id="recvProgress"></div>
+</div>
+
+<hr>
+<div id="logs"></div>
+
+<script>
+// Minimal P2P file transfer using simple-peer and manual signal exchange.
+// Usage:
+// - Émetteur: choisir fichier -> Créer offre -> partager lien ou texte -> attendre réponse -> coller réponse -> start
+// - Récepteur: ouvrir lien (ou coller offre) -> Créer réponse -> renvoyer réponse -> recevoir le fichier
+
+const CHUNK_SIZE = 64 * 1024; // 64KB
+let peer;
+let file;
+let fileHashHex;
+let role = 'send';
+const log = (s)=>{const d=document.getElementById('logs'); d.innerText = s + '\n' + d.innerText}
+
+function bufToHex(buffer){return Array.from(new Uint8Array(buffer)).map(b=>b.toString(16).padStart(2,'0')).join('')}
+async function sha256(ab){const h = await crypto.subtle.digest('SHA-256', ab); return bufToHex(h)}
+
+// UI refs
+const rads = document.querySelectorAll('input[name=role]');
+rads.forEach(r=>r.addEventListener('change',()=>{role=r.value; updateRole()}));
+function updateRole(){
+  document.getElementById('send-area').style.display = role==='send'? 'block' : 'none';
+  document.getElementById('recv-area').style.display = role==='recv'? 'block' : 'none';
+}
+updateRole();
+
+// Sender flow
+const fileinput = document.getElementById('fileinput');
+fileinput.addEventListener('change', async (e)=>{
+  file = e.target.files[0];
+  if(!file) return;
+  document.getElementById('meta').innerText = `Fichier: ${file.name} — ${file.size} octets. Calcul du hash SHA-256...`;
+  const ab = await file.arrayBuffer();
+  fileHashHex = await sha256(ab);
+  document.getElementById('meta').innerText = `Fichier: ${file.name} — ${file.size} octets. SHA-256: ${fileHashHex}`;
+});
+
+function createPeer(initiator){
+  return new SimplePeer({initiator, trickle:false});
+}
+
+document.getElementById('createOffer').addEventListener('click', async ()=>{
+  if(!file){alert('Choisis un fichier d\'abord'); return}
+  peer = createPeer(true);
+  peer.on('signal', data => {
+    const sdp = JSON.stringify(data);
+    const b = btoa(unescape(encodeURIComponent(sdp)));
+    const link = location.origin + location.pathname + '#offer=' + b;
+    document.getElementById('offerLink').value = link;
+    document.getElementById('offerText').value = b;
+    navigator.clipboard && navigator.clipboard.writeText(link).catch(()=>{});
+    log('Offre créée. Lien copié si possible.');
+  });
+  peer.on('connect', ()=>{log('Pair connecté. Début du transfert.'); startSend()});
+  peer.on('error', e=>log('Peer error: '+e));
+  peer.on('data', d=>{ // messages from receiver
+    try{ const msg = JSON.parse(new TextDecoder().decode(d)); log('Reçu: '+JSON.stringify(msg)); }
+    catch(e){}
+  });
+});
+
+async function startSend(){
+  // send meta
+  const meta = {name:file.name, size:file.size, sha256:fileHashHex};
+  peer.send(JSON.stringify({type:'meta',meta}));
+  const stream = file.stream();
+  const reader = stream.getReader();
+  let sent = 0; let chunkIndex=0;
+  const prog = document.getElementById('sendProgress');
+  while(true){
+    const {value, done} = await reader.read();
+    if(done) break;
+    // slice value if larger than CHUNK_SIZE
+    let offset = 0;
+    while(offset < value.byteLength){
+      const slice = value.subarray(offset, offset + CHUNK_SIZE);
+      peer.send(slice);
+      sent += slice.byteLength;
+      offset += CHUNK_SIZE;
+      chunkIndex++;
+      prog.innerText = `Envoyé ${sent}/${file.size} octets`;
+    }
+  }
+  peer.send(JSON.stringify({type:'end'}));
+  prog.innerText = `Terminé. Envoyé ${sent} octets`;
+}
+
+// Apply answer pasted by sender
+document.getElementById('applyAnswer').addEventListener('click', ()=>{
+  const ans = document.getElementById('answerInput').value.trim();
+  if(!ans) return alert('Colle la réponse ici');
+  try{ const data = JSON.parse(decodeURIComponent(escape(atob(ans)))); peer.signal(data); log('Réponse appliquée. En attente de connexion.'); }
+  catch(e){alert('Réponse invalide');}
+});
+
+// Receiver flow
+const recvOfferTA = document.getElementById('remoteOffer');
+const params = new URLSearchParams(location.hash.replace('#','?'));
+if(params.has('offer')){
+  const b = params.get('offer');
+  recvOfferTA.value = b;
+  role = 'recv';
+  document.querySelector('input[value=recv]').checked = true;
+  updateRole();
+  log('Offre chargée depuis le lien. Clique "Créer réponse"');
+}
+
+let recvBuffers = [];
+let expectedSize = 0;
+let recvName = '';
+let expectedHash = '';
+
+document.getElementById('createAnswer').addEventListener('click', ()=>{
+  const b = recvOfferTA.value.trim();
+  if(!b) return alert('Colle l\'offre');
+  try{ const offerObj = JSON.parse(decodeURIComponent(escape(atob(b))));
+    peer = createPeer(false);
+    peer.on('signal', data=>{
+      const s = JSON.stringify(data);
+      const bb = btoa(unescape(encodeURIComponent(s)));
+      document.getElementById('answerText').value = bb;
+      navigator.clipboard && navigator.clipboard.writeText(bb).catch(()=>{});
+      log('Réponse créée et copiée si possible. Renvoyer au destinataire.');
+    });
+    peer.on('connect', ()=>{log('Connecté. En attente de données.');});
+    peer.on('data', async d=>{
+      // try parse
+      if(typeof d === 'string' || d instanceof String){
+        try{ const msg = JSON.parse(d);
+          if(msg.type==='meta'){ recvName = msg.meta.name; expectedSize = msg.meta.size; expectedHash = msg.meta.sha256; recvBuffers = []; document.getElementById('recvProgress').innerText = `Meta reçu: ${recvName} ${expectedSize} octets`;} 
+          else if(msg.type==='end'){ assembleFile(); }
+          return;
+        } catch(e){}
+      }
+      // binary chunk
+      recvBuffers.push(d);
+      const got = recvBuffers.reduce((s,b)=>s + b.byteLength,0);
+      document.getElementById('recvProgress').innerText = `Reçu ${got}/${expectedSize} octets`;
+    });
+    peer.on('error', e=>log('Peer error: '+e));
+    peer.signal(offerObj);
+  } catch(e){alert('Offre invalide')}
+});
+
+async function assembleFile(){
+  // concat
+  const total = recvBuffers.reduce((s,b)=>s + b.byteLength,0);
+  const tmp = new Uint8Array(total);
+  let offset=0; for(const b of recvBuffers){ tmp.set(new Uint8Array(b), offset); offset += b.byteLength; }
+  const hash = await sha256(tmp.buffer);
+  const ok = (expectedHash && hash === expectedHash);
+  const blob = new Blob([tmp]);
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = recvName || 'download.bin';
+  a.textContent = `Télécharger ${a.download} (${(total/1024).toFixed(1)} KB) - intégrité ${ok? 'OK':'ÉCHEC'}`;
+  const container = document.getElementById('recvProgress');
+  container.appendChild(document.createElement('br'));
+  container.appendChild(a);
+  log('Fichier assemblé. SHA-256: '+hash);
+}
+
+</script>
+</body>
+</html>
