@@ -3,950 +3,545 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>P2P File Share & Chat</title>
+    <title>P2P File & Chat Transfer</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Inter Font -->
     <style>
-        :root {
-            --primary: #4a6fa5;
-            --secondary: #6b8cbc;
-            --light: #f5f7fa;
-            --dark: #2c3e50;
-            --success: #2ecc71;
-            --danger: #e74c3c;
-            --warning: #f39c12;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
         body {
-            background-color: var(--light);
-            color: var(--dark);
-            line-height: 1.6;
+            font-family: 'Inter', sans-serif;
+            background-color: #f7fafc;
         }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding: 20px;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        
-        h1 {
-            color: var(--primary);
-            margin-bottom: 10px;
-        }
-        
-        .status-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding: 10px 15px;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        }
-        
-        .status-indicator {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .status-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background-color: var(--danger);
-        }
-        
-        .status-dot.connected {
-            background-color: var(--success);
-        }
-        
-        .main-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-        
-        @media (max-width: 768px) {
-            .main-content {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        .panel {
-            background-color: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        
-        .panel-title {
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #eee;
-            color: var(--primary);
-        }
-        
-        .file-drop-area {
-            border: 2px dashed #ccc;
-            border-radius: 10px;
-            padding: 30px;
-            text-align: center;
-            margin-bottom: 20px;
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-        
-        .file-drop-area:hover, .file-drop-area.highlight {
-            border-color: var(--primary);
-            background-color: rgba(74, 111, 165, 0.05);
-        }
-        
-        .file-input {
-            display: none;
-        }
-        
-        .btn {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: background-color 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .btn:hover {
-            background-color: var(--secondary);
-        }
-        
-        .btn:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
-        
-        .btn-success {
-            background-color: var(--success);
-        }
-        
-        .btn-success:hover {
-            background-color: #27ae60;
-        }
-        
-        .btn-danger {
-            background-color: var(--danger);
-        }
-        
-        .btn-danger:hover {
-            background-color: #c0392b;
-        }
-        
-        .file-info {
-            margin-top: 15px;
-            padding: 15px;
-            background-color: #f8f9fa;
-            border-radius: 5px;
-            display: none;
-        }
-        
-        .file-info.show {
-            display: block;
-        }
-        
-        .file-info p {
-            margin-bottom: 5px;
-        }
-        
-        .file-name {
-            font-weight: bold;
-            word-break: break-all;
-        }
-        
-        .file-size {
-            color: #666;
-        }
-        
-        .link-container {
-            margin-top: 20px;
-            display: none;
-        }
-        
-        .link-container.show {
-            display: block;
-        }
-        
-        .link-box {
-            display: flex;
-            margin-top: 10px;
-        }
-        
-        .link-input {
-            flex: 1;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px 0 0 5px;
-            font-size: 14px;
-        }
-        
-        .copy-btn {
-            border-radius: 0 5px 5px 0;
-            padding: 10px 15px;
-        }
-        
-        .chat-container {
-            display: flex;
-            flex-direction: column;
-            height: 400px;
-        }
-        
-        .chat-messages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 15px;
-            border: 1px solid #eee;
-            border-radius: 5px;
-            margin-bottom: 15px;
-            background-color: #f8f9fa;
-        }
-        
-        .message {
-            margin-bottom: 15px;
-            padding: 10px 15px;
-            border-radius: 18px;
-            max-width: 80%;
-            word-wrap: break-word;
-        }
-        
-        .message.received {
-            background-color: #e9ecef;
-            border-bottom-left-radius: 5px;
-            align-self: flex-start;
-        }
-        
-        .message.sent {
-            background-color: var(--primary);
-            color: white;
-            border-bottom-right-radius: 5px;
-            margin-left: auto;
-        }
-        
-        .message-time {
-            font-size: 0.7rem;
-            opacity: 0.7;
-            margin-top: 5px;
-            text-align: right;
-        }
-        
-        .chat-input-container {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .chat-input {
-            flex: 1;
-            padding: 10px 15px;
-            border: 1px solid #ddd;
-            border-radius: 20px;
-            outline: none;
-        }
-        
-        .chat-input:focus {
-            border-color: var(--primary);
-        }
-        
-        .send-btn {
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            padding: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .progress-container {
-            margin-top: 15px;
-            display: none;
-        }
-        
-        .progress-container.show {
-            display: block;
-        }
-        
-        .progress-bar {
-            height: 10px;
-            background-color: #e9ecef;
-            border-radius: 5px;
-            overflow: hidden;
-            margin-bottom: 5px;
-        }
-        
-        .progress {
-            height: 100%;
-            background-color: var(--success);
-            width: 0%;
-            transition: width 0.3s;
-        }
-        
-        .progress-text {
-            text-align: center;
-            font-size: 0.9rem;
-            color: #666;
-        }
-        
-        .instructions {
-            margin-top: 30px;
-            background-color: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        
-        .instructions h3 {
-            margin-bottom: 15px;
-            color: var(--primary);
-        }
-        
-        .instructions ol {
-            margin-left: 20px;
-        }
-        
-        .instructions li {
-            margin-bottom: 10px;
-        }
-        
-        .alert {
-            padding: 10px 15px;
-            border-radius: 5px;
-            margin-bottom: 15px;
-            display: none;
-        }
-        
-        .alert.show {
-            display: block;
-        }
-        
-        .alert-success {
-            background-color: rgba(46, 204, 113, 0.2);
-            border: 1px solid var(--success);
-            color: #27ae60;
-        }
-        
-        .alert-error {
-            background-color: rgba(231, 76, 60, 0.2);
-            border: 1px solid var(--danger);
-            color: #c0392b;
-        }
-        
-        .alert-info {
-            background-color: rgba(52, 152, 219, 0.2);
-            border: 1px solid #3498db;
-            color: #2980b9;
+        .container-card {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease-in-out;
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <header>
-            <h1>P2P File Share & Chat</h1>
-            <p>Share files and chat directly between browsers with no server dependency</p>
-        </header>
-        
-        <div class="status-bar">
-            <div class="status-indicator">
-                <div class="status-dot" id="statusDot"></div>
-                <span id="statusText">Disconnected</span>
-            </div>
-            <div id="peerInfo"></div>
+<body class="min-h-screen p-4 md:p-8 flex items-center justify-center">
+
+    <div id="app" class="w-full max-w-4xl bg-white rounded-xl container-card p-6 md:p-10">
+        <h1 class="text-3xl md:text-4xl font-extrabold text-blue-800 mb-6 text-center">
+            Serverless P2P File & Chat
+        </h1>
+
+        <!-- Connection Status Display -->
+        <div id="status-area" class="text-center p-3 mb-6 rounded-lg font-medium">
+            <!-- Content filled by JS -->
         </div>
-        
-        <div class="main-content">
-            <div class="panel">
-                <h2 class="panel-title">File Sharing</h2>
-                
-                <div id="senderSection">
-                    <div class="file-drop-area" id="fileDropArea">
-                        <p>Drag & drop a file here or click to browse</p>
-                        <input type="file" id="fileInput" class="file-input">
-                    </div>
-                    
-                    <div class="file-info" id="fileInfo">
-                        <p class="file-name" id="fileName"></p>
-                        <p class="file-size" id="fileSize"></p>
-                    </div>
-                    
-                    <button id="generateLinkBtn" class="btn" disabled>
-                        <span>Generate Share Link</span>
+
+        <!-- Section 1: Initiator (File Selection) -->
+        <div id="initiator-view" class="space-y-6 hidden">
+            <h2 class="text-xl font-semibold text-gray-700">1. Select File & Share</h2>
+
+            <div class="flex flex-col md:flex-row gap-4">
+                <input type="file" id="file-input" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <button onclick="startSharing()" id="share-button" disabled class="w-full md:w-auto px-6 py-3 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                    Generate Share Link
+                </button>
+            </div>
+
+            <div id="share-link-box" class="hidden p-4 bg-blue-50 rounded-lg border-l-4 border-blue-500">
+                <p class="text-sm font-semibold text-blue-700 mb-2">Share this link with the receiver:</p>
+                <div class="flex items-center space-x-2">
+                    <input type="text" id="share-link-input" readonly class="flex-grow p-2 border border-blue-300 rounded-lg bg-white text-sm focus:outline-none" />
+                    <button onclick="copyToClipboard('share-link-input')" class="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2v-2m-4-3l-4 4m0 0l-4-4m4 4V7"></path></svg>
                     </button>
-                    
-                    <div class="link-container" id="linkContainer">
-                        <p>Share this link with the receiver:</p>
-                        <div class="link-box">
-                            <input type="text" id="shareLink" class="link-input" readonly>
-                            <button id="copyLinkBtn" class="btn copy-btn">Copy</button>
-                        </div>
-                    </div>
                 </div>
-                
-                <div id="receiverSection" style="display: none;">
-                    <div class="alert alert-info" id="receiverAlert">
-                        Connected to sender. Ready to receive file.
-                    </div>
-                    
-                    <div class="file-info" id="receivedFileInfo">
-                        <p class="file-name" id="receivedFileName"></p>
-                        <p class="file-size" id="receivedFileSize"></p>
-                    </div>
-                    
-                    <button id="downloadBtn" class="btn btn-success" disabled>
-                        <span>Download File</span>
-                    </button>
-                    
-                    <div class="progress-container" id="progressContainer">
-                        <div class="progress-bar">
-                            <div class="progress" id="progressBar"></div>
-                        </div>
-                        <div class="progress-text" id="progressText">0%</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="panel">
-                <h2 class="panel-title">Chat</h2>
-                
-                <div class="chat-container">
-                    <div class="chat-messages" id="chatMessages">
-                        <div class="message received">
-                            <div class="message-text">Welcome! Start a conversation once connected.</div>
-                            <div class="message-time">System</div>
-                        </div>
-                    </div>
-                    
-                    <div class="chat-input-container">
-                        <input type="text" id="chatInput" class="chat-input" placeholder="Type a message..." disabled>
-                        <button id="sendBtn" class="btn send-btn" disabled>
-                            <span>➤</span>
-                        </button>
-                    </div>
-                </div>
+                <p class="text-xs text-red-500 mt-2">
+                    ⚠ **Crucial:** Your browser MUST remain open until the receiver downloads the file.
+                </p>
+                <p id="initiator-wait-note" class="text-xs text-gray-600 mt-2 font-semibold hidden">
+                    Please wait up to 20 seconds for the receiver's connection to establish via relay.
+                </p>
             </div>
         </div>
-        
-        <div class="instructions">
-            <h3>How to use:</h3>
-            <ol>
-                <li><strong>Sender:</strong> Select a file and generate a share link</li>
-                <li><strong>Sender:</strong> Share the link with the receiver</li>
-                <li><strong>Receiver:</strong> Open the link to establish connection</li>
-                <li><strong>Both:</strong> Use the chat while the file transfers</li>
-                <li><strong>Receiver:</strong> Download the file once transfer is complete</li>
-            </ol>
-            <p><strong>Note:</strong> The sender's browser must remain open during the entire transfer process.</p>
+
+        <!-- Section 2: Receiver (Download) -->
+        <div id="receiver-view" class="space-y-6 hidden">
+            <h2 class="text-xl font-semibold text-gray-700">1. Receiving File</h2>
+            <div id="file-receive-info" class="p-4 bg-yellow-50 rounded-lg border-l-4 border-yellow-500 text-yellow-800">
+                Awaiting connection from sender...
+            </div>
+            <div id="download-progress-bar" class="w-full h-3 bg-gray-200 rounded-full overflow-hidden hidden">
+                <div id="progress-bar" class="h-full bg-green-500 transition-all duration-300" style="width: 0;"></div>
+            </div>
+            <button onclick="downloadFile()" id="download-button" disabled class="w-full px-6 py-3 bg-green-500 text-white font-bold rounded-lg hover:bg-green-600 transition disabled:opacity-50 disabled:cursor-not-allowed hidden">
+                Download File (0 Bytes)
+            </button>
         </div>
+
+        <hr class="my-8 border-gray-200">
+
+        <!-- Section 3: Real-Time Chat (Shared) -->
+        <div id="chat-section" class="hidden">
+            <h2 class="text-xl font-semibold text-gray-700 mb-4">2. Real-Time Chat</h2>
+
+            <!-- Chat Window -->
+            <div id="chat-window" class="h-64 overflow-y-auto p-4 border border-gray-300 rounded-lg bg-gray-50 mb-4 space-y-3">
+                <!-- Chat messages will be appended here -->
+                <div class="text-center text-sm text-gray-500 pt-10">Waiting for connection to establish...</div>
+            </div>
+
+            <!-- Chat Input -->
+            <div class="flex gap-3">
+                <input type="text" id="chat-input" placeholder="Type a message..." disabled class="flex-grow p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" onkeydown="if(event.key === 'Enter') sendChatMessage()">
+                <button onclick="sendChatMessage()" id="chat-send-button" disabled class="px-6 py-3 bg-indigo-500 text-white font-bold rounded-lg hover:bg-indigo-600 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                    Send
+                </button>
+            </div>
+        </div>
+
     </div>
 
-    <!-- Include Simple-Peer library -->
-    <script src="https://cdn.jsdelivr.net/npm/simple-peer@9.11.1/simplepeer.min.js"></script>
-    
+    <!-- Load Simple-Peer and SHA-256 for P2P and Integrity Check -->
+    <script src="https://cdn.jsdelivr.net/npm/simple-peer@9.11.0/simplepeer.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-sha256@0.9.0/src/sha256.min.js"></script>
+
     <script>
-        // DOM Elements
-        const statusDot = document.getElementById('statusDot');
-        const statusText = document.getElementById('statusText');
-        const peerInfo = document.getElementById('peerInfo');
-        const fileDropArea = document.getElementById('fileDropArea');
-        const fileInput = document.getElementById('fileInput');
-        const fileInfo = document.getElementById('fileInfo');
-        const fileName = document.getElementById('fileName');
-        const fileSize = document.getElementById('fileSize');
-        const generateLinkBtn = document.getElementById('generateLinkBtn');
-        const linkContainer = document.getElementById('linkContainer');
-        const shareLink = document.getElementById('shareLink');
-        const copyLinkBtn = document.getElementById('copyLinkBtn');
-        const senderSection = document.getElementById('senderSection');
-        const receiverSection = document.getElementById('receiverSection');
-        const receiverAlert = document.getElementById('receiverAlert');
-        const receivedFileInfo = document.getElementById('receivedFileInfo');
-        const receivedFileName = document.getElementById('receivedFileName');
-        const receivedFileSize = document.getElementById('receivedFileSize');
-        const downloadBtn = document.getElementById('downloadBtn');
-        const progressContainer = document.getElementById('progressContainer');
-        const progressBar = document.getElementById('progressBar');
-        const progressText = document.getElementById('progressText');
-        const chatMessages = document.getElementById('chatMessages');
-        const chatInput = document.getElementById('chatInput');
-        const sendBtn = document.getElementById('sendBtn');
+        // --- Global State Variables ---
+        var peer;
+        var isInitiator = false;
+        var fileToSend = null;
+        var fileReader = null;
+        var receivedBuffer = [];
+        var receivedSize = 0;
+        var fileMetadata = null;
+        const CHUNK_SIZE = 64 * 1024; // 64 KB chunks
+        var fileHashToSend = null; 
 
-        // Application state
-        let peer = null;
-        let isInitiator = false;
-        let selectedFile = null;
-        let fileChunks = [];
-        let receivedChunks = [];
-        let fileHash = '';
-        let connectionEstablished = false;
+        // --- Utility Functions ---
 
-        // Initialize the application
-        function init() {
-            setupEventListeners();
-            checkURLForOffer();
+        /**
+         * Copies text from an input field to the clipboard.
+         */
+        function copyToClipboard(elementId) {
+            const input = document.getElementById(elementId);
+            input.select();
+            input.setSelectionRange(0, 99999); // For mobile devices
+            try {
+                document.execCommand('copy');
+                updateStatus("Link copied to clipboard!", 'bg-green-100 text-green-800');
+            } catch (err) {
+                updateStatus("Could not copy link. Please copy manually.", 'bg-red-100 text-red-800');
+                console.error('Copy error:', err);
+            }
         }
 
-        // Set up event listeners
-        function setupEventListeners() {
-            // File selection
-            fileDropArea.addEventListener('click', () => fileInput.click());
-            fileDropArea.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                fileDropArea.classList.add('highlight');
-            });
-            fileDropArea.addEventListener('dragleave', () => {
-                fileDropArea.classList.remove('highlight');
-            });
-            fileDropArea.addEventListener('drop', (e) => {
-                e.preventDefault();
-                fileDropArea.classList.remove('highlight');
-                if (e.dataTransfer.files.length) {
-                    handleFileSelection(e.dataTransfer.files[0]);
-                }
-            });
-            fileInput.addEventListener('change', (e) => {
-                if (e.target.files.length) {
-                    handleFileSelection(e.target.files[0]);
-                }
-            });
-
-            // Generate link button
-            generateLinkBtn.addEventListener('click', generateShareLink);
-
-            // Copy link button
-            copyLinkBtn.addEventListener('click', copyShareLink);
-
-            // Download button
-            downloadBtn.addEventListener('click', downloadFile);
-
-            // Chat functionality
-            chatInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    sendMessage();
-                }
-            });
-            sendBtn.addEventListener('click', sendMessage);
+        /**
+         * Updates the main status message at the top of the app.
+         */
+        function updateStatus(message, classes) {
+            const statusArea = document.getElementById('status-area');
+            statusArea.textContent = message;
+            statusArea.className = `text-center p-3 mb-6 rounded-lg font-medium ${classes}`;
         }
 
-        // Handle file selection
-        function handleFileSelection(file) {
-            selectedFile = file;
-            
-            // Display file info
-            fileName.textContent = file.name;
-            fileSize.textContent = formatFileSize(file.size);
-            fileInfo.classList.add('show');
-            
-            // Enable generate link button
-            generateLinkBtn.disabled = false;
-            
-            // Calculate file hash
-            calculateFileHash(file).then(hash => {
-                fileHash = hash;
-            });
+        /**
+         * Appends a message to the chat window.
+         */
+        function appendMessage(sender, message, isSelf = false) {
+            const chatWindow = document.getElementById('chat-window');
+            const messageEl = document.createElement('div');
+            messageEl.className = `flex ${isSelf ? 'justify-end' : 'justify-start'}`;
+
+            const contentEl = document.createElement('div');
+            contentEl.className = `max-w-xs md:max-w-md p-3 rounded-xl ${isSelf ? 'bg-indigo-500 text-white rounded-br-none' : 'bg-gray-200 text-gray-800 rounded-tl-none'}`;
+
+            const senderEl = document.createElement('span');
+            senderEl.className = `block text-xs font-semibold ${isSelf ? 'text-indigo-200' : 'text-gray-500'}`;
+            senderEl.textContent = isSelf ? 'You' : 'Peer';
+
+            const textEl = document.createElement('p');
+            textEl.textContent = message;
+            textEl.className = 'text-sm break-words';
+
+            contentEl.appendChild(senderEl);
+            contentEl.appendChild(textEl);
+            messageEl.appendChild(contentEl);
+            chatWindow.appendChild(messageEl);
+
+            // Scroll to the bottom
+            chatWindow.scrollTop = chatWindow.scrollHeight;
         }
 
-        // Format file size for display
+        /**
+         * Formats file size into a human-readable string.
+         */
         function formatFileSize(bytes) {
             if (bytes === 0) return '0 Bytes';
             const k = 1024;
-            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
             const i = Math.floor(Math.log(bytes) / Math.log(k));
             return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         }
 
-        // Calculate SHA-256 hash of a file
-        async function calculateFileHash(file) {
-            return new Promise((resolve) => {
-                // For MVP, we'll use a simplified approach
-                // In a production app, you would use the Web Crypto API
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    // Simplified hash calculation (not cryptographically secure)
-                    // In a real implementation, use crypto.subtle.digest()
-                    let hash = 0;
-                    const arrayBuffer = e.target.result;
-                    const uint8Array = new Uint8Array(arrayBuffer);
-                    
-                    for (let i = 0; i < uint8Array.length; i++) {
-                        hash = ((hash << 5) - hash) + uint8Array[i];
-                        hash |= 0; // Convert to 32-bit integer
+        // --- WebRTC Setup and Signaling ---
+
+        /**
+         * Initializes the SimplePeer connection.
+         */
+        function initializeP2P(isInit, offerData) {
+            isInitiator = isInit;
+
+            try {
+                // IMPORTANT: This configuration is designed for maximum compatibility, 
+                // using both STUN (direct) and TURN (relay) servers.
+                const peerConfig = {
+                    initiator: isInit,
+                    trickle: false, // Ensures a single, complete SDP is generated for the share link
+                    config: {
+                        iceServers: [
+                            // STUN server for direct connection (fastest, preferred)
+                            { urls: 'stun:stun.l.google.com:19302' },
+                            // TURN server for relayed connection (required behind restrictive NAT/Firewalls)
+                            {
+                                urls: 'turn:openrelay.metered.ca:80',
+                                username: 'openrelayproject',
+                                credential: 'openrelayproject'
+                            }
+                        ]
                     }
-                    
-                    resolve(hash.toString(16));
                 };
-                reader.readAsArrayBuffer(file.slice(0, 1024)); // Only hash first 1KB for performance
-            });
-        }
 
-        // Generate share link with WebRTC offer
-        function generateShareLink() {
-            if (!selectedFile) return;
-            
-            isInitiator = true;
-            updateStatus('Connecting...', 'warning');
-            
-            // Create a new peer connection as initiator
-            peer = new SimplePeer({
-                initiator: true,
-                trickle: false
-            });
-            
-            setupPeerEvents();
-            
-            // When we have the signal data, create the share link
-            peer.on('signal', (data) => {
-                const offer = JSON.stringify(data);
-                const encodedOffer = btoa(offer);
-                
-                // Create the shareable URL
-                const url = new URL(window.location.href);
-                url.searchParams.set('offer', encodedOffer);
-                url.searchParams.set('filename', selectedFile.name);
-                url.searchParams.set('filesize', selectedFile.size);
-                url.searchParams.set('filehash', fileHash);
-                
-                shareLink.value = url.toString();
-                linkContainer.classList.add('show');
-                
-                updateStatus('Waiting for receiver...', 'warning');
-            });
-        }
+                console.log("P2P STATUS: Initializing SimplePeer with full STUN/TURN configuration.", { isInitiator });
+                peer = new SimplePeer(peerConfig);
+            } catch (e) {
+                console.error("P2P ERROR: SimplePeer initialization failed.", e);
+                updateStatus("WebRTC setup failed. Ensure your browser supports it.", 'bg-red-100 text-red-800');
+                return;
+            }
 
-        // Copy share link to clipboard
-        function copyShareLink() {
-            shareLink.select();
-            document.execCommand('copy');
-            
-            // Show feedback
-            const originalText = copyLinkBtn.innerHTML;
-            copyLinkBtn.innerHTML = '<span>Copied!</span>';
-            setTimeout(() => {
-                copyLinkBtn.innerHTML = originalText;
-            }, 2000);
-        }
+            // --- Signaling Events (SDP Exchange) ---
 
-        // Check URL for WebRTC offer (receiver side)
-        function checkURLForOffer() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const offerParam = urlParams.get('offer');
-            
-            if (offerParam) {
-                // We're the receiver
-                isInitiator = false;
-                senderSection.style.display = 'none';
-                receiverSection.style.display = 'block';
-                receiverAlert.classList.add('show');
+            peer.on('signal', data => {
+                const signalString = btoa(JSON.stringify(data)); // Base64 encode SDP
+                console.log(`P2P STATUS: Generated signal data (Length: ${signalString.length})`);
                 
-                const filename = urlParams.get('filename');
-                const filesize = urlParams.get('filesize');
-                const filehash = urlParams.get('filehash');
-                
-                receivedFileName.textContent = filename;
-                receivedFileSize.textContent = formatFileSize(parseInt(filesize));
-                receivedFileInfo.classList.add('show');
-                
-                // Create peer connection as receiver
-                peer = new SimplePeer({
-                    initiator: false,
-                    trickle: false
-                });
-                
-                setupPeerEvents();
-                
-                // Send the offer to the peer
-                try {
-                    const offer = JSON.parse(atob(offerParam));
-                    peer.signal(offer);
-                    updateStatus('Connecting to sender...', 'warning');
-                } catch (error) {
-                    console.error('Error parsing offer:', error);
-                    updateStatus('Connection failed', 'error');
+                if (isInitiator) {
+                    // Sender: Generate share link when the offer is ready
+                    const link = `${window.location.origin}${window.location.pathname}#${signalString}`;
+                    document.getElementById('share-link-input').value = link;
+                    document.getElementById('share-link-box').classList.remove('hidden');
+                    document.getElementById('initiator-wait-note').classList.remove('hidden');
+                    updateStatus("Link Generated. Share and wait for receiver's connection...", 'bg-yellow-100 text-yellow-800');
+                } else {
+                    // Receiver: This signal is the answer, which would be sent back to the initiator in a production app.
+                    console.log("P2P STATUS: Generated Answer Signal. Waiting for connection state change.");
                 }
+            });
+
+            // If receiver, immediately signal the offer from the URL hash
+            if (!isInit && offerData) {
+                try {
+                    console.log(`P2P STATUS: Detected offer data in URL hash (Length: ${offerData.length}). Signaling peer.`);
+                    const decodedOffer = JSON.parse(atob(offerData));
+                    peer.signal(decodedOffer);
+                    updateStatus("Attempting connection. Please wait...", 'bg-blue-100 text-blue-800');
+                } catch (e) {
+                    updateStatus("Invalid share link format. Cannot decode connection data.", 'bg-red-100 text-red-800');
+                    console.error("P2P ERROR: Error decoding signal data:", e);
+                }
+            }
+
+            // --- Connection Events ---
+
+            peer.on('connect', () => {
+                console.log("P2P STATUS: CONNECTION ESTABLISHED.");
+                updateStatus("P2P Connection Established! Chat is active.", 'bg-green-100 text-green-800');
+                document.getElementById('chat-send-button').disabled = false;
+                document.getElementById('chat-input').disabled = false;
+                
+                const initialMessage = document.getElementById('chat-window').querySelector('div');
+                if (initialMessage) initialMessage.remove(); 
+                document.getElementById('chat-section').classList.remove('hidden');
+
+                if (isInitiator && fileToSend) {
+                    sendFileMetadata();
+                }
+            });
+
+            peer.on('error', err => {
+                console.error('P2P ERROR: Connection failed or broke:', err);
+                updateStatus(`Connection Failed. Check your network or the Console (F12) for details.`, 'bg-red-600 text-white');
+                peer.destroy();
+            });
+
+            peer.on('close', () => {
+                console.log("P2P STATUS: Connection closed.");
+                updateStatus("Connection closed by peer.", 'bg-red-100 text-red-800');
+                document.getElementById('chat-send-button').disabled = true;
+                document.getElementById('chat-input').disabled = true;
+            });
+
+            // --- Data Events (File & Chat) ---
+            peer.on('data', receiveData);
+        }
+
+        // --- Chat Logic ---
+
+        function sendChatMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+
+            if (message && peer && peer.connected) {
+                const payload = JSON.stringify({ type: 'chat', message: message });
+                peer.send(payload);
+                appendMessage('You', message, true);
+                input.value = '';
+            } else if (!peer || !peer.connected) {
+                updateStatus("Not connected. Cannot send message.", 'bg-red-100 text-red-800');
             }
         }
 
-        // Set up peer event handlers
-        function setupPeerEvents() {
-            peer.on('connect', () => {
-                connectionEstablished = true;
-                updateStatus('Connected', 'success');
-                
-                // Enable chat
-                chatInput.disabled = false;
-                sendBtn.disabled = false;
-                
-                // If we're the sender, prepare file for transfer
-                if (isInitiator) {
-                    prepareFileForTransfer();
-                }
-                
-                // Add connection message to chat
-                addChatMessage('Connection established. You can now chat.', 'system');
-            });
-            
-            peer.on('data', (data) => {
-                const message = JSON.parse(data.toString());
-                handlePeerMessage(message);
-            });
-            
-            peer.on('close', () => {
-                connectionEstablished = false;
-                updateStatus('Disconnected', 'error');
-                
-                // Disable chat
-                chatInput.disabled = true;
-                sendBtn.disabled = true;
-                
-                addChatMessage('Connection lost.', 'system');
-            });
-            
-            peer.on('error', (err) => {
-                console.error('Peer error:', err);
-                updateStatus('Connection error', 'error');
-            });
-            
-            // Handle incoming signals (for receiver)
-            peer.on('signal', (data) => {
-                if (!isInitiator && data.type === 'answer') {
-                    // The receiver can send the answer back to the sender
-                    // In a real implementation, you'd need a signaling server
-                    // For this demo, we'll just log it
-                    console.log('Answer generated:', data);
-                }
+        // --- File Sender Logic (Initiator) ---
+
+        /**
+         * Called when a file is selected.
+         */
+        document.getElementById('file-input').addEventListener('change', (e) => {
+            fileToSend = e.target.files[0];
+            const shareButton = document.getElementById('share-button');
+            if (fileToSend) {
+                shareButton.disabled = false;
+                updateStatus(`File selected: ${fileToSend.name} (${formatFileSize(fileToSend.size)})`, 'bg-blue-100 text-blue-800');
+            } else {
+                shareButton.disabled = true;
+                updateStatus("Select a file to begin.", 'bg-gray-100 text-gray-800');
+            }
+        });
+
+        /**
+         * Initiates the signaling process and prepares the file.
+         */
+        function startSharing() {
+            if (!fileToSend) return;
+
+            document.getElementById('share-button').disabled = true;
+            document.getElementById('share-button').textContent = 'Calculating Hash...';
+            updateStatus("Calculating file hash for integrity check...", 'bg-yellow-100 text-yellow-800');
+
+            // Calculate SHA-256 hash before initializing P2P and sending
+            calculateFileHash(fileToSend).then(hash => {
+                fileHashToSend = hash;
+                document.getElementById('share-button').textContent = 'Waiting for Connection...';
+
+                // 1. Initialize P2P connection (will generate the share link via signal event)
+                initializeP2P(true);
+
+            }).catch(e => {
+                console.error("P2P ERROR: Hashing failed:", e);
+                updateStatus("Error calculating file hash. Cannot proceed.", 'bg-red-100 text-red-800');
+                document.getElementById('share-button').textContent = 'Generate Share Link';
+                document.getElementById('share-button').disabled = false;
             });
         }
 
-        // Prepare file for transfer by splitting into chunks
-        function prepareFileForTransfer() {
-            if (!selectedFile) return;
-            
-            const CHUNK_SIZE = 16 * 1024; // 16KB chunks
-            const totalChunks = Math.ceil(selectedFile.size / CHUNK_SIZE);
-            fileChunks = [];
-            
+        /**
+         * Sends file metadata after connection is established.
+         */
+        function sendFileMetadata() {
+            const metadata = {
+                type: 'metadata',
+                name: fileToSend.name,
+                size: fileToSend.size,
+                hash: fileHashToSend,
+                chunks: Math.ceil(fileToSend.size / CHUNK_SIZE)
+            };
+            peer.send(JSON.stringify(metadata));
+            console.log("P2P STATUS: Sent file metadata.");
+            updateStatus(`Metadata sent. Starting file transfer...`, 'bg-blue-100 text-blue-800');
+
+            // Start sending chunks immediately after metadata
+            sendFileChunks();
+        }
+
+        /**
+         * Sends file data in chunks over the P2P data channel.
+         */
+        function sendFileChunks() {
             let offset = 0;
-            const fileReader = new FileReader();
-            
-            fileReader.onload = function(e) {
-                const chunk = {
-                    index: fileChunks.length,
-                    data: e.target.result,
-                    total: totalChunks
-                };
-                
-                fileChunks.push(chunk);
-                
-                // Read next chunk if there are more
-                offset += CHUNK_SIZE;
-                if (offset < selectedFile.size) {
-                    readNextChunk(offset, CHUNK_SIZE);
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                // Send chunk as a raw ArrayBuffer
+                peer.send(e.target.result);
+                offset += e.target.result.byteLength;
+
+                const percent = Math.floor((offset / fileToSend.size) * 100);
+                updateStatus(`Sending file: ${percent}% complete.`, 'bg-blue-100 text-blue-800');
+
+                if (offset < fileToSend.size) {
+                    // Send next chunk
+                    readNextChunk();
                 } else {
-                    // All chunks read, ready to send
-                    console.log('All chunks prepared:', fileChunks.length);
+                    console.log("P2P STATUS: File transfer complete.");
+                    updateStatus(`File transfer complete! Receiver can now download.`, 'bg-green-100 text-green-800');
+                    fileToSend = null; // Clear file after successful transfer
                 }
             };
-            
-            function readNextChunk(offset, size) {
-                const slice = selectedFile.slice(offset, offset + size);
-                fileReader.readAsArrayBuffer(slice);
+
+            reader.onerror = (e) => {
+                console.error("P2P ERROR: File reading error on sender:", e);
+                updateStatus("File reading error. Transfer aborted.", 'bg-red-100 text-red-800');
+            };
+
+            function readNextChunk() {
+                const slice = fileToSend.slice(offset, offset + CHUNK_SIZE);
+                reader.readAsArrayBuffer(slice);
             }
-            
-            // Start reading the first chunk
-            readNextChunk(0, CHUNK_SIZE);
+
+            readNextChunk(); // Start the first chunk
         }
 
-        // Handle messages from the peer
-        function handlePeerMessage(message) {
-            switch (message.type) {
-                case 'chat':
-                    addChatMessage(message.text, 'received');
-                    break;
-                    
-                case 'file_request':
-                    // Sender receives file request from receiver
-                    if (isInitiator) {
-                        startFileTransfer();
+        // --- Hashing Logic ---
+
+        /**
+         * Calculates the SHA-256 hash of a File object.
+         */
+        function calculateFileHash(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = function() {
+                    try {
+                        const hash = sha256.create().update(new Uint8Array(reader.result)).hex();
+                        resolve(hash);
+                    } catch (e) {
+                        reject(e);
                     }
-                    break;
-                    
-                case 'file_chunk':
-                    // Receiver receives file chunk from sender
-                    if (!isInitiator) {
-                        receiveFileChunk(message);
-                    }
-                    break;
-                    
-                case 'file_complete':
-                    // Receiver receives file complete notification
-                    if (!isInitiator) {
-                        completeFileTransfer(message);
-                    }
-                    break;
-            }
+                };
+                reader.onerror = reject;
+                reader.readAsArrayBuffer(file);
+            });
         }
 
-        // Start file transfer (sender side)
-        function startFileTransfer() {
-            if (!fileChunks.length) return;
-            
-            let chunkIndex = 0;
-            
-            function sendNextChunk() {
-                if (chunkIndex >= fileChunks.length) {
-                    // All chunks sent
-                    peer.send(JSON.stringify({
-                        type: 'file_complete',
-                        hash: fileHash,
-                        filename: selectedFile.name
-                    }));
-                    return;
+        // --- File Receiver Logic (All peers receive data) ---
+
+        /**
+         * Handles incoming data from the peer.
+         */
+        function receiveData(data) {
+            // Check if the data is a JSON string (for metadata or chat)
+            if (typeof data === 'string') {
+                try {
+                    const payload = JSON.parse(data);
+                    if (payload.type === 'metadata') {
+                        handleMetadata(payload);
+                    } else if (payload.type === 'chat') {
+                        appendMessage('Peer', payload.message, false);
+                    }
+                } catch (e) {
+                    // Ignore non-JSON strings (like internal signaling from the peer)
+                    // console.log("Received non-JSON string/control data:", data); 
                 }
-                
-                const chunk = fileChunks[chunkIndex];
-                peer.send(JSON.stringify({
-                    type: 'file_chunk',
-                    ...chunk
-                }));
-                
-                chunkIndex++;
-                
-                // Send next chunk after a small delay to avoid overwhelming the connection
-                setTimeout(sendNextChunk, 10);
-            }
-            
-            sendNextChunk();
-        }
-
-        // Receive file chunk (receiver side)
-        function receiveFileChunk(message) {
-            receivedChunks[message.index] = message.data;
-            
-            // Update progress
-            const progress = Math.floor((Object.keys(receivedChunks).length / message.total) * 100);
-            progressBar.style.width = `${progress}%`;
-            progressText.textContent = `${progress}%`;
-            
-            if (!progressContainer.classList.contains('show')) {
-                progressContainer.classList.add('show');
-            }
-            
-            // If all chunks received, enable download
-            if (Object.keys(receivedChunks).length === message.total) {
-                downloadBtn.disabled = false;
+            } else if (data instanceof ArrayBuffer) {
+                // Data is a file chunk
+                handleFileChunk(data);
             }
         }
 
-        // Complete file transfer (receiver side)
-        function completeFileTransfer(message) {
-            // Verify file integrity (simplified)
-            // In a real implementation, you would calculate the hash of the received file
-            // and compare it to message.hash
-            
-            addChatMessage(`File "${message.filename}" received successfully.`, 'system');
-            progressText.textContent = 'Transfer complete!';
+        /**
+         * Handles incoming file metadata.
+         */
+        function handleMetadata(metadata) {
+            console.log("P2P STATUS: Received file metadata.", metadata);
+            fileMetadata = metadata;
+            receivedBuffer = [];
+            receivedSize = 0;
+
+            const infoEl = document.getElementById('file-receive-info');
+            infoEl.className = 'p-4 bg-blue-50 rounded-lg border-l-4 border-blue-500 text-blue-800';
+            infoEl.innerHTML = `
+                <p>Ready to receive **${metadata.name}**</p>
+                <p class="text-sm">Size: **${formatFileSize(metadata.size)}**</p>
+                <p class="text-xs mt-1">Status: Transfer in progress...</p>
+            `;
+            document.getElementById('download-progress-bar').classList.remove('hidden');
+            updateStatus("Receiving file chunks...", 'bg-yellow-100 text-yellow-800');
         }
 
-        // Download the received file
+        /**
+         * Handles incoming file chunks.
+         */
+        function handleFileChunk(chunk) {
+            if (!fileMetadata) return; 
+
+            receivedBuffer.push(chunk);
+            receivedSize += chunk.byteLength;
+
+            const percent = Math.floor((receivedSize / fileMetadata.size) * 100);
+            const progressBar = document.getElementById('progress-bar');
+            progressBar.style.width = `${percent}%`;
+
+            if (receivedSize >= fileMetadata.size) {
+                // Transfer complete
+                const completeFile = new Blob(receivedBuffer);
+                updateStatus("Transfer Complete! Verifying file integrity...", 'bg-yellow-500 text-white');
+
+                // Verify SHA-256 integrity
+                calculateFileHash(completeFile).then(calculatedHash => {
+                    const downloadButton = document.getElementById('download-button');
+                    if (calculatedHash === fileMetadata.hash) {
+                        console.log("P2P STATUS: Hash check passed.");
+                        updateStatus("Integrity CHECK PASSED. File is ready to download.", 'bg-green-600 text-white');
+                        downloadButton.disabled = false;
+                        downloadButton.textContent = `Download ${fileMetadata.name} (${formatFileSize(fileMetadata.size)})`;
+                        downloadButton.classList.remove('hidden');
+                        document.getElementById('file-receive-info').classList.add('hidden');
+                        document.getElementById('download-progress-bar').classList.add('hidden');
+                    } else {
+                        console.error("P2P ERROR: Hash check failed! Received:", calculatedHash, "Expected:", fileMetadata.hash);
+                        updateStatus("Integrity CHECK FAILED! DO NOT DOWNLOAD.", 'bg-red-600 text-white');
+                        downloadButton.disabled = true;
+                        downloadButton.textContent = `Verification Failed!`;
+                    }
+                }).catch(e => {
+                    console.error("P2P ERROR: Verification hash calculation error:", e);
+                    updateStatus("Verification Error. Cannot download.", 'bg-red-600 text-white');
+                });
+            }
+        }
+
+        /**
+         * Triggers the file download using the collected Blob.
+         */
         function downloadFile() {
-            if (!receivedChunks.length) return;
-            
-            // Reconstruct the file from chunks
-            const blob = new Blob(receivedChunks);
+            if (!fileMetadata || receivedBuffer.length === 0) return;
+
+            const blob = new Blob(receivedBuffer);
             const url = URL.createObjectURL(blob);
-            
-            // Create download link
             const a = document.createElement('a');
             a.href = url;
-            a.download = receivedFileName.textContent;
+            a.download = fileMetadata.name;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
-            
-            // Clean up
             URL.revokeObjectURL(url);
+
+            updateStatus("Download started. Transfer session complete.", 'bg-indigo-100 text-indigo-800');
         }
 
-        // Send chat message
-        function sendMessage() {
-            const text = chatInput.value.trim();
-            if (!text || !connectionEstablished) return;
-            
-            // Send message to peer
-            peer.send(JSON.stringify({
-                type: 'chat',
-                text: text
-            }));
-            
-            // Add to local chat
-            addChatMessage(text, 'sent');
-            
-            // Clear input
-            chatInput.value = '';
-        }
+        // --- Initialization on Load ---
 
-        // Add message to chat UI
-        function addChatMessage(text, type) {
-            const messageEl = document.createElement('div');
-            messageEl.className = `message ${type}`;
-            
-            const messageText = document.createElement('div');
-            messageText.className = 'message-text';
-            messageText.textContent = text;
-            
-            const messageTime = document.createElement('div');
-            messageTime.className = 'message-time';
-            messageTime.textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            
-            messageEl.appendChild(messageText);
-            messageEl.appendChild(messageTime);
-            
-            chatMessages.appendChild(messageEl);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
+        window.onload = function() {
+            const hash = window.location.hash.substring(1);
+            const initiatorView = document.getElementById('initiator-view');
+            const receiverView = document.getElementById('receiver-view');
 
-        // Update connection status
-        function updateStatus(text, type) {
-            statusText.textContent = text;
-            
-            // Update status dot color
-            statusDot.className = 'status-dot';
-            if (type === 'success') statusDot.classList.add('connected');
-            
-            // Update peer info
-            if (connectionEstablished) {
-                peerInfo.textContent = isInitiator ? 'Role: Sender' : 'Role: Receiver';
+            if (hash) {
+                // Receiver Mode
+                receiverView.classList.remove('hidden');
+                updateStatus("Share link detected. Preparing to connect...", 'bg-yellow-100 text-yellow-800');
+                initializeP2P(false, hash);
             } else {
-                peerInfo.textContent = '';
+                // Initiator Mode
+                initiatorView.classList.remove('hidden');
+                updateStatus("Welcome! Select a file to share.", 'bg-gray-100 text-gray-800');
             }
-        }
-
-        // Initialize the application when the page loads
-        document.addEventListener('DOMContentLoaded', init);
+        };
     </script>
+
 </body>
 </html>
