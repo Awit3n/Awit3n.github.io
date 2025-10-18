@@ -87,24 +87,12 @@
             background-color: var(--success-color);
         }
         
-        .btn-success:hover {
-            background-color: #27ae60;
-        }
-        
         .btn-warning {
             background-color: var(--warning-color);
         }
         
-        .btn-warning:hover {
-            background-color: #e67e22;
-        }
-        
         .btn-danger {
             background-color: var(--danger-color);
-        }
-        
-        .btn-danger:hover {
-            background-color: #c0392b;
         }
         
         .btn-group {
@@ -142,21 +130,6 @@
             font-size: 1.2rem;
             text-align: center;
             word-break: break-all;
-        }
-        
-        .link-display {
-            margin: 15px 0;
-            text-align: center;
-        }
-        
-        .link-display a {
-            color: var(--primary-color);
-            text-decoration: none;
-            font-weight: 600;
-        }
-        
-        .link-display a:hover {
-            text-decoration: underline;
         }
         
         .chat-container {
@@ -213,10 +186,50 @@
             max-width: 100%;
         }
         
+        .message-file {
+            background-color: #e3f2fd;
+            border: 1px solid #bbdefb;
+        }
+        
         .message-sender {
             font-weight: 600;
             margin-bottom: 5px;
             font-size: 0.9rem;
+        }
+        
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 5px;
+        }
+        
+        .file-icon {
+            font-size: 1.5rem;
+        }
+        
+        .file-details {
+            flex: 1;
+        }
+        
+        .file-name {
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+        
+        .file-size {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        .download-btn {
+            background: var(--success-color);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
         }
         
         .chat-input {
@@ -224,11 +237,28 @@
             padding: 15px;
             background-color: white;
             border-top: 1px solid #ddd;
+            gap: 10px;
         }
         
         .chat-input input {
             flex: 1;
-            margin-right: 10px;
+            margin: 0;
+        }
+        
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+        
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
         }
         
         .users-list {
@@ -246,10 +276,6 @@
             align-items: center;
             padding: 10px;
             border-bottom: 1px solid #eee;
-        }
-        
-        .user-item:last-child {
-            border-bottom: none;
         }
         
         .user-actions {
@@ -289,14 +315,40 @@
             background-color: var(--warning-color);
         }
         
-        @media (max-width: 768px) {
-            .btn-group {
-                flex-direction: column;
-            }
-            
-            .chat-container {
-                height: 400px;
-            }
+        .connection-status {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+        
+        .status-connected {
+            background-color: var(--success-color);
+        }
+        
+        .status-disconnected {
+            background-color: var(--danger-color);
+        }
+        
+        .status-connecting {
+            background-color: var(--warning-color);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background-color: #e0e0e0;
+            border-radius: 2px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            background-color: var(--primary-color);
+            width: 0%;
+            transition: width 0.3s ease;
         }
     </style>
 </head>
@@ -304,7 +356,7 @@
     <div class="container">
         <header>
             <h1>Chat Peer-to-Peer</h1>
-            <p class="subtitle">Communication directe entre utilisateurs - 100% Serverless</p>
+            <p class="subtitle">Communication directe entre utilisateurs</p>
         </header>
         
         <!-- Page d'accueil -->
@@ -314,6 +366,17 @@
             <div class="btn-group">
                 <button id="host-btn" class="btn">Créer un salon</button>
                 <button id="join-btn" class="btn">Rejoindre un salon</button>
+            </div>
+            <div class="form-group" style="margin-top: 20px;">
+                <label for="server-select">Serveur de signalisation :</label>
+                <select id="server-select">
+                    <option value="default">Serveur PeerJS par défaut</option>
+                    <option value="custom">Serveur personnalisé</option>
+                </select>
+            </div>
+            <div id="custom-server" class="form-group hidden">
+                <label for="server-url">URL du serveur :</label>
+                <input type="text" id="server-url" placeholder="ws://localhost:9000">
             </div>
         </div>
         
@@ -339,9 +402,8 @@
             <h2>Salon créé avec succès !</h2>
             <p>Partagez ce code avec les personnes que vous souhaitez inviter :</p>
             <div class="code-display" id="room-code"></div>
-            <div class="link-display">
-                <p>Ou partagez ce lien :</p>
-                <a href="#" id="room-link"></a>
+            <div class="form-group">
+                <button id="copy-code-btn" class="btn">Copier le code</button>
             </div>
             <button id="start-chat-btn" class="btn">Commencer à discuter</button>
         </div>
@@ -364,7 +426,13 @@
         <div id="chat-page" class="hidden">
             <div class="chat-container">
                 <div class="chat-header">
-                    <h3 id="chat-title">Salon de discussion</h3>
+                    <div>
+                        <h3 id="chat-title">Salon de discussion</h3>
+                        <div id="connection-info">
+                            <span class="connection-status" id="connection-status"></span>
+                            <span id="connection-text">Connexion...</span>
+                        </div>
+                    </div>
                     <div>
                         <span id="user-count">1 utilisateur</span>
                         <button id="leave-chat-btn" class="btn btn-danger" style="margin-left: 10px;">Quitter</button>
@@ -374,8 +442,12 @@
                     <!-- Les messages apparaîtront ici -->
                 </div>
                 <div class="chat-input">
-                    <input type="text" id="message-input" placeholder="Tapez votre message...">
-                    <button id="send-btn" class="btn">Envoyer</button>
+                    <input type="text" id="message-input" placeholder="Tapez votre message..." disabled>
+                    <div class="file-input-wrapper">
+                        <button class="btn" id="file-btn" disabled>📎 Fichier</button>
+                        <input type="file" id="file-input" multiple>
+                    </div>
+                    <button id="send-btn" class="btn" disabled>Envoyer</button>
                 </div>
             </div>
             
@@ -392,6 +464,19 @@
                 </div>
             </div>
         </div>
+        
+        <!-- Instructions de dépannage -->
+        <div id="troubleshooting" class="card hidden">
+            <h3>Problèmes de connexion ?</h3>
+            <p>Si les utilisateurs ne parviennent pas à se connecter :</p>
+            <ul>
+                <li>Vérifiez que vous utilisez le même code de salon</li>
+                <li>Essayez un serveur de signalisation différent</li>
+                <li>Vérifiez vos paramètres de pare-feu</li>
+                <li>Essayez depuis le même réseau local</li>
+            </ul>
+            <button id="retry-connection" class="btn">Réessayer la connexion</button>
+        </div>
     </div>
     
     <!-- Notification -->
@@ -404,6 +489,7 @@
         const codePage = document.getElementById('code-page');
         const joinPage = document.getElementById('join-page');
         const chatPage = document.getElementById('chat-page');
+        const troubleshooting = document.getElementById('troubleshooting');
         
         const hostBtn = document.getElementById('host-btn');
         const joinBtn = document.getElementById('join-btn');
@@ -412,19 +498,27 @@
         const joinRoomBtn = document.getElementById('join-room-btn');
         const leaveChatBtn = document.getElementById('leave-chat-btn');
         const sendBtn = document.getElementById('send-btn');
+        const copyCodeBtn = document.getElementById('copy-code-btn');
+        const retryConnectionBtn = document.getElementById('retry-connection');
+        const serverSelect = document.getElementById('server-select');
+        const customServerDiv = document.getElementById('custom-server');
+        const fileBtn = document.getElementById('file-btn');
+        const fileInput = document.getElementById('file-input');
         
         const hostNameInput = document.getElementById('host-name');
         const joinNameInput = document.getElementById('join-name');
         const roomCodeInput = document.getElementById('room-code-input');
         const messageInput = document.getElementById('message-input');
+        const serverUrlInput = document.getElementById('server-url');
         
         const roomCodeDisplay = document.getElementById('room-code');
-        const roomLinkDisplay = document.getElementById('room-link');
         const chatMessages = document.getElementById('chat-messages');
         const userCountDisplay = document.getElementById('user-count');
         const usersListContainer = document.getElementById('users-list-container');
         const pendingUsersList = document.getElementById('pending-users');
         const connectedUsersList = document.getElementById('connected-users');
+        const connectionStatus = document.getElementById('connection-status');
+        const connectionText = document.getElementById('connection-text');
         
         const notification = document.getElementById('notification');
         
@@ -437,7 +531,17 @@
         let connections = [];
         let users = [];
         let pendingUsers = [];
+        let peerConfig = {
+            host: '0.peerjs.com',
+            port: 443,
+            secure: true,
+            path: '/'
+        };
         
+        // Pour éviter les messages dupliqués
+        let messageIds = new Set();
+        let fileTransfers = new Map();
+
         // Gestionnaires d'événements
         hostBtn.addEventListener('click', () => {
             homePage.classList.add('hidden');
@@ -449,11 +553,24 @@
             joinPage.classList.remove('hidden');
         });
         
+        serverSelect.addEventListener('change', () => {
+            if (serverSelect.value === 'custom') {
+                customServerDiv.classList.remove('hidden');
+            } else {
+                customServerDiv.classList.add('hidden');
+            }
+        });
+        
         createChatBtn.addEventListener('click', createRoom);
         startChatBtn.addEventListener('click', startChat);
         joinRoomBtn.addEventListener('click', joinRoom);
         leaveChatBtn.addEventListener('click', leaveChat);
         sendBtn.addEventListener('click', sendMessage);
+        copyCodeBtn.addEventListener('click', copyRoomCode);
+        retryConnectionBtn.addEventListener('click', retryConnection);
+        fileBtn.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', handleFileSelect);
+        
         messageInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') sendMessage();
         });
@@ -470,14 +587,23 @@
             isHost = true;
             chatType = document.getElementById('chat-type').value;
             
+            // Mettre à jour la configuration PeerJS si serveur personnalisé
+            if (serverSelect.value === 'custom' && serverUrlInput.value.trim()) {
+                const url = new URL(serverUrlInput.value.trim());
+                peerConfig = {
+                    host: url.hostname,
+                    port: url.port || (url.protocol === 'https:' ? 443 : 80),
+                    secure: url.protocol === 'https:',
+                    path: url.pathname || '/'
+                };
+            }
+            
             // Générer un code de salon unique
             const roomCode = generateRoomCode();
             currentRoom = roomCode;
             
             // Afficher le code généré
             roomCodeDisplay.textContent = roomCode;
-            roomLinkDisplay.textContent = `${window.location.href}#${roomCode}`;
-            roomLinkDisplay.href = `${window.location.href}#${roomCode}`;
             
             hostPage.classList.add('hidden');
             codePage.classList.remove('hidden');
@@ -513,6 +639,17 @@
             currentUser = userName;
             currentRoom = roomCode;
             
+            // Mettre à jour la configuration PeerJS si serveur personnalisé
+            if (serverSelect.value === 'custom' && serverUrlInput.value.trim()) {
+                const url = new URL(serverUrlInput.value.trim());
+                peerConfig = {
+                    host: url.hostname,
+                    port: url.port || (url.protocol === 'https:' ? 443 : 80),
+                    secure: url.protocol === 'https:',
+                    path: url.pathname || '/'
+                };
+            }
+            
             joinPage.classList.add('hidden');
             chatPage.classList.remove('hidden');
             
@@ -523,19 +660,42 @@
         }
         
         function initializePeer() {
-            // Initialiser PeerJS avec un ID aléatoire
-            peer = new Peer(null, {
-                debug: 2
-            });
+            updateConnectionStatus('connecting', 'Connexion en cours...');
+            
+            // Configuration améliorée pour PeerJS
+            const config = {
+                debug: 3,
+                config: {
+                    iceServers: [
+                        { urls: 'stun:stun.l.google.com:19302' },
+                        { urls: 'stun:global.stun.twilio.com:3478' }
+                    ]
+                },
+                ...peerConfig
+            };
+            
+            // Si nous sommes l'hôte, nous utilisons le code de salon comme ID
+            // Sinon, nous générons un ID aléatoire
+            const peerId = isHost ? currentRoom : null;
+            
+            peer = new Peer(peerId, config);
             
             peer.on('open', (id) => {
                 console.log('Peer connecté avec ID:', id);
+                updateConnectionStatus('connected', 'Connecté');
+                
+                // Activer l'interface de chat
+                messageInput.disabled = false;
+                sendBtn.disabled = false;
+                fileBtn.disabled = false;
                 
                 // Si c'est un hôte, on attend les connexions
                 if (isHost) {
                     peer.on('connection', (conn) => {
                         handleIncomingConnection(conn);
                     });
+                    
+                    showNotification('En attente de participants...');
                 } else {
                     // Si c'est un joiner, on se connecte à l'hôte
                     connectToHost();
@@ -544,19 +704,64 @@
             
             peer.on('error', (err) => {
                 console.error('Erreur PeerJS:', err);
-                showNotification('Erreur de connexion', 'error');
+                
+                let errorMessage = 'Erreur de connexion';
+                
+                switch (err.type) {
+                    case 'peer-unavailable':
+                        errorMessage = 'Salon introuvable. Vérifiez le code.';
+                        break;
+                    case 'network':
+                        errorMessage = 'Problème de réseau. Vérifiez votre connexion.';
+                        break;
+                    case 'server-error':
+                        errorMessage = 'Erreur du serveur. Essayez un autre serveur.';
+                        break;
+                }
+                
+                showNotification(errorMessage, 'error');
+                updateConnectionStatus('disconnected', errorMessage);
+                
+                // Afficher les instructions de dépannage
+                troubleshooting.classList.remove('hidden');
+            });
+            
+            peer.on('disconnected', () => {
+                console.log('Peer déconnecté');
+                updateConnectionStatus('disconnected', 'Déconnecté');
+                showNotification('Déconnecté du serveur', 'warning');
             });
         }
         
         function handleIncomingConnection(conn) {
             console.log('Nouvelle connexion entrante:', conn.peer);
             
+            // Vérifier si nous avons déjà cette connexion
+            if (connections.some(c => c.peer === conn.peer)) {
+                console.log('Connexion déjà existante, fermeture de la nouvelle');
+                conn.close();
+                return;
+            }
+            
             conn.on('open', () => {
                 console.log('Connexion établie avec:', conn.peer);
                 
                 // Si le salon est privé, ajouter à la liste d'attente
                 if (chatType === 'private' && !isUserApproved(conn.peer)) {
-                    addPendingUser(conn);
+                    // Demander le nom d'utilisateur
+                    conn.send({
+                        type: 'request-username'
+                    });
+                    
+                    // Configurer le gestionnaire de données une seule fois
+                    const dataHandler = (data) => {
+                        if (data.type === 'user-join') {
+                            conn.off('data', dataHandler); // Retirer le gestionnaire
+                            addPendingUser(conn, data.user);
+                        }
+                    };
+                    
+                    conn.on('data', dataHandler);
                     return;
                 }
                 
@@ -571,23 +776,28 @@
             conn.on('close', () => {
                 console.log('Connexion fermée avec:', conn.peer);
                 removeUser(conn.peer);
+                // Retirer la connexion de la liste
+                connections = connections.filter(c => c.peer !== conn.peer);
             });
             
             conn.on('error', (err) => {
                 console.error('Erreur de connexion:', err);
                 removeUser(conn.peer);
+                connections = connections.filter(c => c.peer !== conn.peer);
             });
         }
         
         function connectToHost() {
-            // Dans un vrai scénario P2P, nous aurions besoin d'un mécanisme de découverte
-            // Pour cette démo, nous supposons que l'hôte a l'ID égal au code du salon
+            // L'hôte a l'ID égal au code du salon
             const hostId = currentRoom;
             
-            const conn = peer.connect(hostId);
+            const conn = peer.connect(hostId, {
+                reliable: true
+            });
             
             conn.on('open', () => {
                 console.log('Connecté à l\'hôte');
+                updateConnectionStatus('connected', 'Connecté au salon');
                 
                 // Envoyer les informations de l'utilisateur
                 conn.send({
@@ -595,9 +805,6 @@
                     user: currentUser,
                     isHost: false
                 });
-                
-                // Ajouter l'utilisateur à la liste
-                addUser(currentUser, false, false);
                 
                 showNotification('Connecté au salon !');
             });
@@ -609,11 +816,15 @@
             conn.on('close', () => {
                 console.log('Déconnecté de l\'hôte');
                 showNotification('Déconnecté du salon', 'warning');
+                updateConnectionStatus('disconnected', 'Déconnecté du salon');
+                connections = connections.filter(c => c.peer !== conn.peer);
             });
             
             conn.on('error', (err) => {
                 console.error('Erreur de connexion à l\'hôte:', err);
                 showNotification('Impossible de se connecter au salon', 'error');
+                updateConnectionStatus('disconnected', 'Erreur de connexion');
+                connections = connections.filter(c => c.peer !== conn.peer);
             });
             
             connections.push(conn);
@@ -621,6 +832,16 @@
         
         function handleReceivedData(data, conn) {
             console.log('Données reçues:', data);
+            
+            // Vérifier les doublons avec un ID de message
+            if (data.messageId && messageIds.has(data.messageId)) {
+                console.log('Message dupliqué ignoré:', data.messageId);
+                return;
+            }
+            
+            if (data.messageId) {
+                messageIds.add(data.messageId);
+            }
             
             switch (data.type) {
                 case 'user-join':
@@ -635,8 +856,32 @@
                     }
                     break;
                     
+                case 'request-username':
+                    // Envoyer notre nom d'utilisateur
+                    conn.send({
+                        type: 'user-join',
+                        user: currentUser,
+                        isHost: false
+                    });
+                    break;
+                    
                 case 'message':
-                    displayMessage(data.message, data.user, false);
+                    displayMessage(data.message, data.user, false, data.messageId);
+                    break;
+                    
+                case 'file-info':
+                    // Afficher les informations du fichier
+                    displayFileInfo(data.fileInfo, data.user, false, data.messageId);
+                    break;
+                    
+                case 'file-request':
+                    // Envoyer le fichier demandé
+                    sendFileData(conn, data.fileId);
+                    break;
+                    
+                case 'file-data':
+                    // Recevoir les données du fichier
+                    receiveFileData(data);
                     break;
                     
                 case 'user-list':
@@ -666,6 +911,11 @@
                 name: userName,
                 connection: conn
             };
+            
+            // Vérifier si l'utilisateur est déjà en attente
+            if (pendingUsers.some(u => u.id === user.id)) {
+                return;
+            }
             
             pendingUsers.push(user);
             
@@ -728,17 +978,20 @@
             // Ajouter à la liste des utilisateurs
             addUser(userName, false, false);
             
-            // Ajouter à la liste des connexions
-            connections.push(conn);
-            
-            // Configurer les gestionnaires d'événements
-            conn.on('data', (data) => {
-                handleReceivedData(data, conn);
-            });
-            
-            conn.on('close', () => {
-                removeUser(conn.peer);
-            });
+            // Ajouter à la liste des connexions (vérifier les doublons)
+            if (!connections.some(c => c.peer === conn.peer)) {
+                connections.push(conn);
+                
+                // Configurer les gestionnaires d'événements
+                conn.on('data', (data) => {
+                    handleReceivedData(data, conn);
+                });
+                
+                conn.on('close', () => {
+                    removeUser(conn.peer);
+                    connections = connections.filter(c => c.peer !== conn.peer);
+                });
+            }
             
             // Envoyer la liste actuelle des utilisateurs
             if (isHost) {
@@ -880,29 +1133,197 @@
             const message = messageInput.value.trim();
             if (!message) return;
             
+            const messageId = generateMessageId();
+            
             // Afficher le message localement
-            displayMessage(message, currentUser, true);
+            displayMessage(message, currentUser, true, messageId);
             
             // Envoyer le message à tous les autres utilisateurs
             const messageData = {
                 type: 'message',
                 message: message,
-                user: currentUser
+                user: currentUser,
+                messageId: messageId
             };
             
-            connections.forEach(conn => {
-                if (conn.open) {
-                    conn.send(messageData);
-                }
-            });
+            sendToAllConnections(messageData);
             
             // Vider le champ de saisie
             messageInput.value = '';
         }
         
-        function displayMessage(message, sender, isOwn) {
+        function handleFileSelect(event) {
+            const files = event.target.files;
+            if (files.length === 0) return;
+            
+            for (let file of files) {
+                sendFile(file);
+            }
+            
+            // Réinitialiser l'input file
+            event.target.value = '';
+        }
+        
+        function sendFile(file) {
+            const fileId = generateMessageId();
+            const fileInfo = {
+                id: fileId,
+                name: file.name,
+                size: file.size,
+                type: file.type
+            };
+            
+            // Afficher les informations du fichier localement
+            displayFileInfo(fileInfo, currentUser, true, fileId);
+            
+            // Stocker le fichier pour envoi
+            fileTransfers.set(fileId, {
+                file: file,
+                info: fileInfo,
+                progress: 0
+            });
+            
+            // Envoyer les informations du fichier à tous les utilisateurs
+            const fileInfoData = {
+                type: 'file-info',
+                fileInfo: fileInfo,
+                user: currentUser,
+                messageId: fileId
+            };
+            
+            sendToAllConnections(fileInfoData);
+            
+            // Pour chaque connexion, envoyer le fichier
+            connections.forEach(conn => {
+                if (conn.open) {
+                    // Le destinataire demandera le fichier quand il sera prêt
+                    setTimeout(() => {
+                        conn.send({
+                            type: 'file-request',
+                            fileId: fileId
+                        });
+                    }, 1000);
+                }
+            });
+        }
+        
+        function sendFileData(conn, fileId) {
+            const transfer = fileTransfers.get(fileId);
+            if (!transfer) return;
+            
+            const file = transfer.file;
+            const chunkSize = 16384; // 16KB
+            let offset = 0;
+            
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                const chunk = e.target.result;
+                
+                conn.send({
+                    type: 'file-data',
+                    fileId: fileId,
+                    data: chunk,
+                    offset: offset,
+                    totalSize: file.size,
+                    final: (offset + chunkSize >= file.size)
+                });
+                
+                offset += chunk.length;
+                
+                // Mettre à jour la progression
+                transfer.progress = (offset / file.size) * 100;
+                updateFileProgress(fileId, transfer.progress);
+                
+                if (offset < file.size) {
+                    // Lire le chunk suivant
+                    readNextChunk();
+                }
+            };
+            
+            function readNextChunk() {
+                const slice = file.slice(offset, offset + chunkSize);
+                reader.readAsArrayBuffer(slice);
+            }
+            
+            readNextChunk();
+        }
+        
+        function receiveFileData(data) {
+            const fileId = data.fileId;
+            
+            if (!fileTransfers.has(fileId)) {
+                fileTransfers.set(fileId, {
+                    chunks: [],
+                    receivedSize: 0,
+                    totalSize: data.totalSize,
+                    info: null
+                });
+            }
+            
+            const transfer = fileTransfers.get(fileId);
+            transfer.chunks.push(data.data);
+            transfer.receivedSize += data.data.byteLength;
+            
+            // Mettre à jour la progression
+            const progress = (transfer.receivedSize / data.totalSize) * 100;
+            updateFileProgress(fileId, progress);
+            
+            if (data.final) {
+                // Reconstituer le fichier
+                const blob = new Blob(transfer.chunks);
+                const url = URL.createObjectURL(blob);
+                
+                // Mettre à jour le bouton de téléchargement
+                updateDownloadButton(fileId, url);
+                
+                // Nettoyer après un moment
+                setTimeout(() => {
+                    URL.revokeObjectURL(url);
+                }, 60000);
+            }
+        }
+        
+        function updateFileProgress(fileId, progress) {
+            const progressElement = document.querySelector(`[data-file-id="${fileId}"] .progress`);
+            if (progressElement) {
+                progressElement.style.width = `${progress}%`;
+                
+                if (progress >= 100) {
+                    setTimeout(() => {
+                        progressElement.parentElement.style.display = 'none';
+                    }, 1000);
+                }
+            }
+        }
+        
+        function updateDownloadButton(fileId, url) {
+            const downloadBtn = document.querySelector(`[data-file-id="${fileId}"] .download-btn`);
+            if (downloadBtn) {
+                downloadBtn.onclick = () => {
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = fileTransfers.get(fileId).info.name;
+                    a.click();
+                };
+                downloadBtn.textContent = 'Télécharger';
+            }
+        }
+        
+        function sendToAllConnections(data) {
+            connections.forEach(conn => {
+                if (conn.open) {
+                    conn.send(data);
+                }
+            });
+        }
+        
+        function displayMessage(message, sender, isOwn, messageId) {
             const messageElement = document.createElement('div');
             messageElement.className = `message ${isOwn ? 'own' : 'other'}`;
+            if (messageId) {
+                messageElement.dataset.messageId = messageId;
+            }
             
             if (!isOwn) {
                 const senderElement = document.createElement('div');
@@ -919,6 +1340,59 @@
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
         
+        function displayFileInfo(fileInfo, sender, isOwn, messageId) {
+            const messageElement = document.createElement('div');
+            messageElement.className = `message ${isOwn ? 'own' : 'other'} message-file`;
+            messageElement.dataset.fileId = fileInfo.id;
+            
+            if (!isOwn) {
+                const senderElement = document.createElement('div');
+                senderElement.className = 'message-sender';
+                senderElement.textContent = sender;
+                messageElement.appendChild(senderElement);
+            }
+            
+            const fileElement = document.createElement('div');
+            fileElement.className = 'file-info';
+            
+            const fileIcon = document.createElement('div');
+            fileIcon.className = 'file-icon';
+            fileIcon.textContent = '📎';
+            
+            const fileDetails = document.createElement('div');
+            fileDetails.className = 'file-details';
+            
+            const fileName = document.createElement('div');
+            fileName.className = 'file-name';
+            fileName.textContent = fileInfo.name;
+            
+            const fileSize = document.createElement('div');
+            fileSize.className = 'file-size';
+            fileSize.textContent = formatFileSize(fileInfo.size);
+            
+            const downloadBtn = document.createElement('button');
+            downloadBtn.className = 'download-btn';
+            downloadBtn.textContent = isOwn ? 'Envoyé' : 'En attente...';
+            downloadBtn.disabled = true;
+            
+            const progressBar = document.createElement('div');
+            progressBar.className = 'progress-bar';
+            const progress = document.createElement('div');
+            progress.className = 'progress';
+            progressBar.appendChild(progress);
+            
+            fileDetails.appendChild(fileName);
+            fileDetails.appendChild(fileSize);
+            fileElement.appendChild(fileIcon);
+            fileElement.appendChild(fileDetails);
+            fileElement.appendChild(downloadBtn);
+            messageElement.appendChild(fileElement);
+            messageElement.appendChild(progressBar);
+            
+            chatMessages.appendChild(messageElement);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
         function displaySystemMessage(message) {
             const messageElement = document.createElement('div');
             messageElement.className = 'message system';
@@ -926,6 +1400,14 @@
             
             chatMessages.appendChild(messageElement);
             chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         }
         
         function leaveChat() {
@@ -946,9 +1428,12 @@
             connections = [];
             users = [];
             pendingUsers = [];
+            messageIds.clear();
+            fileTransfers.clear();
             
             // Retourner à la page d'accueil
             chatPage.classList.add('hidden');
+            troubleshooting.classList.add('hidden');
             homePage.classList.remove('hidden');
             
             // Vider les champs de saisie
@@ -961,6 +1446,45 @@
             connectedUsersList.innerHTML = '';
         }
         
+        function copyRoomCode() {
+            navigator.clipboard.writeText(currentRoom).then(() => {
+                showNotification('Code copié dans le presse-papier !');
+            }).catch(err => {
+                console.error('Erreur lors de la copie:', err);
+                showNotification('Erreur lors de la copie', 'error');
+            });
+        }
+        
+        function retryConnection() {
+            troubleshooting.classList.add('hidden');
+            
+            if (isHost) {
+                // Recréer le salon
+                initializePeer();
+            } else {
+                // Retenter la connexion
+                connectToHost();
+            }
+        }
+        
+        function updateConnectionStatus(status, text) {
+            connectionStatus.className = 'connection-status';
+            
+            switch (status) {
+                case 'connected':
+                    connectionStatus.classList.add('status-connected');
+                    break;
+                case 'disconnected':
+                    connectionStatus.classList.add('status-disconnected');
+                    break;
+                case 'connecting':
+                    connectionStatus.classList.add('status-connecting');
+                    break;
+            }
+            
+            connectionText.textContent = text;
+        }
+        
         function generateRoomCode() {
             // Générer un code alphanumérique de 6 caractères
             const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -969,6 +1493,10 @@
                 result += chars.charAt(Math.floor(Math.random() * chars.length));
             }
             return result;
+        }
+        
+        function generateMessageId() {
+            return Date.now() + '-' + Math.random().toString(36).substr(2, 9);
         }
         
         function isUserApproved(userId) {
