@@ -1,547 +1,1003 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>P2P File & Chat Transfer</title>
-    <!-- Load Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Load Inter Font -->
+    <title>Chat Peer-to-Peer</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f7fafc;
+        :root {
+            --primary-color: #4a6fa5;
+            --secondary-color: #6b8cbc;
+            --accent-color: #ff7e5f;
+            --light-color: #f5f7fa;
+            --dark-color: #2c3e50;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
         }
-        .container-card {
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            transition: all 0.3s ease-in-out;
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light-color);
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-align: center;
+            text-decoration: none;
+        }
+        
+        .btn:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+        
+        .btn-success {
+            background-color: var(--success-color);
+        }
+        
+        .btn-success:hover {
+            background-color: #27ae60;
+        }
+        
+        .btn-warning {
+            background-color: var(--warning-color);
+        }
+        
+        .btn-warning:hover {
+            background-color: #e67e22;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger-color);
+        }
+        
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        .code-display {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: monospace;
+            font-size: 1.2rem;
+            text-align: center;
+            word-break: break-all;
+        }
+        
+        .link-display {
+            margin: 15px 0;
+            text-align: center;
+        }
+        
+        .link-display a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .link-display a:hover {
+            text-decoration: underline;
+        }
+        
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 500px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .chat-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background-color: #f8f9fa;
+        }
+        
+        .message {
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            border-radius: 18px;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+        
+        .message.own {
+            background-color: var(--primary-color);
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 4px;
+        }
+        
+        .message.other {
+            background-color: #e9ecef;
+            color: var(--dark-color);
+            border-bottom-left-radius: 4px;
+        }
+        
+        .message.system {
+            background-color: transparent;
+            color: #6c757d;
+            font-style: italic;
+            text-align: center;
+            max-width: 100%;
+        }
+        
+        .message-sender {
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .chat-input {
+            display: flex;
+            padding: 15px;
+            background-color: white;
+            border-top: 1px solid #ddd;
+        }
+        
+        .chat-input input {
+            flex: 1;
+            margin-right: 10px;
+        }
+        
+        .users-list {
+            background-color: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .user-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .user-item:last-child {
+            border-bottom: none;
+        }
+        
+        .user-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            background-color: var(--success-color);
+            color: white;
+            border-radius: 4px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+        }
+        
+        .notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .notification.error {
+            background-color: var(--danger-color);
+        }
+        
+        .notification.warning {
+            background-color: var(--warning-color);
+        }
+        
+        @media (max-width: 768px) {
+            .btn-group {
+                flex-direction: column;
+            }
+            
+            .chat-container {
+                height: 400px;
+            }
         }
     </style>
 </head>
-<body class="min-h-screen p-4 md:p-8 flex items-center justify-center">
-
-    <div id="app" class="w-full max-w-4xl bg-white rounded-xl container-card p-6 md:p-10">
-        <h1 class="text-3xl md:text-4xl font-extrabold text-blue-800 mb-6 text-center">
-            Serverless P2P File & Chat
-        </h1>
-
-        <!-- Connection Status Display -->
-        <div id="status-area" class="text-center p-3 mb-6 rounded-lg font-medium">
-            <!-- Content filled by JS -->
-        </div>
-
-        <!-- Section 1: Initiator (File Selection) -->
-        <div id="initiator-view" class="space-y-6 hidden">
-            <h2 class="text-xl font-semibold text-gray-700">1. Select File & Share</h2>
-
-            <div class="flex flex-col md:flex-row gap-4">
-                <input type="file" id="file-input" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                <button onclick="startSharing()" id="share-button" disabled class="w-full md:w-auto px-6 py-3 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed">
-                    Generate Share Link
-                </button>
+<body>
+    <div class="container">
+        <header>
+            <h1>Chat Peer-to-Peer</h1>
+            <p class="subtitle">Communication directe entre utilisateurs - 100% Serverless</p>
+        </header>
+        
+        <!-- Page d'accueil -->
+        <div id="home-page" class="card">
+            <h2>Bienvenue sur le Chat P2P</h2>
+            <p>Choisissez une option pour commencer :</p>
+            <div class="btn-group">
+                <button id="host-btn" class="btn">Créer un salon</button>
+                <button id="join-btn" class="btn">Rejoindre un salon</button>
             </div>
-
-            <div id="share-link-box" class="hidden p-4 bg-blue-50 rounded-lg border-l-4 border-blue-500">
-                <p class="text-sm font-semibold text-blue-700 mb-2">Share this link with the receiver:</p>
-                <div class="flex items-center space-x-2">
-                    <input type="text" id="share-link-input" readonly class="flex-grow p-2 border border-blue-300 rounded-lg bg-white text-sm focus:outline-none" />
-                    <button onclick="copyToClipboard('share-link-input')" class="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2v-2m-4-3l-4 4m0 0l-4-4m4 4V7"></path></svg>
-                    </button>
+        </div>
+        
+        <!-- Page de création de salon -->
+        <div id="host-page" class="card hidden">
+            <h2>Créer un salon de discussion</h2>
+            <div class="form-group">
+                <label for="host-name">Votre nom d'utilisateur</label>
+                <input type="text" id="host-name" placeholder="Entrez votre nom">
+            </div>
+            <div class="form-group">
+                <label for="chat-type">Type de salon</label>
+                <select id="chat-type">
+                    <option value="public">Public - Tout le monde peut rejoindre</option>
+                    <option value="private">Privé - Approbation requise</option>
+                </select>
+            </div>
+            <button id="create-chat-btn" class="btn">Créer le salon</button>
+        </div>
+        
+        <!-- Page de code généré -->
+        <div id="code-page" class="card hidden">
+            <h2>Salon créé avec succès !</h2>
+            <p>Partagez ce code avec les personnes que vous souhaitez inviter :</p>
+            <div class="code-display" id="room-code"></div>
+            <div class="link-display">
+                <p>Ou partagez ce lien :</p>
+                <a href="#" id="room-link"></a>
+            </div>
+            <button id="start-chat-btn" class="btn">Commencer à discuter</button>
+        </div>
+        
+        <!-- Page de connexion -->
+        <div id="join-page" class="card hidden">
+            <h2>Rejoindre un salon</h2>
+            <div class="form-group">
+                <label for="join-name">Votre nom d'utilisateur</label>
+                <input type="text" id="join-name" placeholder="Entrez votre nom">
+            </div>
+            <div class="form-group">
+                <label for="room-code-input">Code du salon</label>
+                <input type="text" id="room-code-input" placeholder="Entrez le code du salon">
+            </div>
+            <button id="join-room-btn" class="btn">Rejoindre le salon</button>
+        </div>
+        
+        <!-- Interface de chat -->
+        <div id="chat-page" class="hidden">
+            <div class="chat-container">
+                <div class="chat-header">
+                    <h3 id="chat-title">Salon de discussion</h3>
+                    <div>
+                        <span id="user-count">1 utilisateur</span>
+                        <button id="leave-chat-btn" class="btn btn-danger" style="margin-left: 10px;">Quitter</button>
+                    </div>
                 </div>
-                <p class="text-xs text-red-500 mt-2">
-                    ⚠ **Crucial:** Your browser MUST remain open until the receiver downloads the file.
-                </p>
-                <p id="initiator-wait-note" class="text-xs text-gray-600 mt-2 font-semibold hidden">
-                    Please wait up to 20 seconds for the receiver's connection to establish via relay.
-                </p>
+                <div class="chat-messages" id="chat-messages">
+                    <!-- Les messages apparaîtront ici -->
+                </div>
+                <div class="chat-input">
+                    <input type="text" id="message-input" placeholder="Tapez votre message...">
+                    <button id="send-btn" class="btn">Envoyer</button>
+                </div>
+            </div>
+            
+            <!-- Liste des utilisateurs (visible uniquement pour les hôtes) -->
+            <div id="users-list-container" class="users-list hidden">
+                <h4>Utilisateurs en attente</h4>
+                <div id="pending-users">
+                    <!-- Les utilisateurs en attente d'approbation apparaîtront ici -->
+                </div>
+                
+                <h4 style="margin-top: 15px;">Utilisateurs connectés</h4>
+                <div id="connected-users">
+                    <!-- Les utilisateurs connectés apparaîtront ici -->
+                </div>
             </div>
         </div>
-
-        <!-- Section 2: Receiver (Download) -->
-        <div id="receiver-view" class="space-y-6 hidden">
-            <h2 class="text-xl font-semibold text-gray-700">1. Receiving File</h2>
-            <div id="file-receive-info" class="p-4 bg-yellow-50 rounded-lg border-l-4 border-yellow-500 text-yellow-800">
-                Awaiting connection from sender...
-            </div>
-            <div id="download-progress-bar" class="w-full h-3 bg-gray-200 rounded-full overflow-hidden hidden">
-                <div id="progress-bar" class="h-full bg-green-500 transition-all duration-300" style="width: 0;"></div>
-            </div>
-            <button onclick="downloadFile()" id="download-button" disabled class="w-full px-6 py-3 bg-green-500 text-white font-bold rounded-lg hover:bg-green-600 transition disabled:opacity-50 disabled:cursor-not-allowed hidden">
-                Download File (0 Bytes)
-            </button>
-        </div>
-
-        <hr class="my-8 border-gray-200">
-
-        <!-- Section 3: Real-Time Chat (Shared) -->
-        <div id="chat-section" class="hidden">
-            <h2 class="text-xl font-semibold text-gray-700 mb-4">2. Real-Time Chat</h2>
-
-            <!-- Chat Window -->
-            <div id="chat-window" class="h-64 overflow-y-auto p-4 border border-gray-300 rounded-lg bg-gray-50 mb-4 space-y-3">
-                <!-- Chat messages will be appended here -->
-                <div class="text-center text-sm text-gray-500 pt-10">Waiting for connection to establish...</div>
-            </div>
-
-            <!-- Chat Input -->
-            <div class="flex gap-3">
-                <input type="text" id="chat-input" placeholder="Type a message..." disabled class="flex-grow p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" onkeydown="if(event.key === 'Enter') sendChatMessage()">
-                <button onclick="sendChatMessage()" id="chat-send-button" disabled class="px-6 py-3 bg-indigo-500 text-white font-bold rounded-lg hover:bg-indigo-600 transition disabled:opacity-50 disabled:cursor-not-allowed">
-                    Send
-                </button>
-            </div>
-        </div>
-
     </div>
-
-    <!-- Load Simple-Peer and SHA-256 for P2P and Integrity Check -->
-    <script src="https://cdn.jsdelivr.net/npm/simple-peer@9.11.0/simplepeer.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/js-sha256@0.9.0/src/sha256.min.js"></script>
+    
+    <!-- Notification -->
+    <div id="notification" class="notification"></div>
 
     <script>
-        // --- Global State Variables ---
-        var peer;
-        var isInitiator = false;
-        var fileToSend = null;
-        var fileReader = null;
-        var receivedBuffer = [];
-        var receivedSize = 0;
-        var fileMetadata = null;
-        const CHUNK_SIZE = 64 * 1024; // 64 KB chunks
-        var fileHashToSend = null; 
-
-        // --- Utility Functions ---
-
-        /**
-         * Copies text from an input field to the clipboard.
-         */
-        function copyToClipboard(elementId) {
-            const input = document.getElementById(elementId);
-            input.select();
-            input.setSelectionRange(0, 99999); // For mobile devices
-            try {
-                document.execCommand('copy');
-                updateStatus("Link copied to clipboard!", 'bg-green-100 text-green-800');
-            } catch (err) {
-                updateStatus("Could not copy link. Please copy manually.", 'bg-red-100 text-red-800');
-                console.error('Copy error:', err);
-            }
-        }
-
-        /**
-         * Updates the main status message at the top of the app.
-         */
-        function updateStatus(message, classes) {
-            const statusArea = document.getElementById('status-area');
-            statusArea.textContent = message;
-            statusArea.className = `text-center p-3 mb-6 rounded-lg font-medium ${classes}`;
-        }
-
-        /**
-         * Appends a message to the chat window.
-         */
-        function appendMessage(sender, message, isSelf = false) {
-            const chatWindow = document.getElementById('chat-window');
-            const messageEl = document.createElement('div');
-            messageEl.className = `flex ${isSelf ? 'justify-end' : 'justify-start'}`;
-
-            const contentEl = document.createElement('div');
-            contentEl.className = `max-w-xs md:max-w-md p-3 rounded-xl ${isSelf ? 'bg-indigo-500 text-white rounded-br-none' : 'bg-gray-200 text-gray-800 rounded-tl-none'}`;
-
-            const senderEl = document.createElement('span');
-            senderEl.className = `block text-xs font-semibold ${isSelf ? 'text-indigo-200' : 'text-gray-500'}`;
-            senderEl.textContent = isSelf ? 'You' : 'Peer';
-
-            const textEl = document.createElement('p');
-            textEl.textContent = message;
-            textEl.className = 'text-sm break-words';
-
-            contentEl.appendChild(senderEl);
-            contentEl.appendChild(textEl);
-            messageEl.appendChild(contentEl);
-            chatWindow.appendChild(messageEl);
-
-            // Scroll to the bottom
-            chatWindow.scrollTop = chatWindow.scrollHeight;
-        }
-
-        /**
-         * Formats file size into a human-readable string.
-         */
-        function formatFileSize(bytes) {
-            if (bytes === 0) return '0 Bytes';
-            const k = 1024;
-            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-        }
-
-        // --- WebRTC Setup and Signaling ---
-
-        /**
-         * Initializes the SimplePeer connection.
-         */
-        function initializeP2P(isInit, offerData) {
-            isInitiator = isInit;
-
-            try {
-                // IMPORTANT: This configuration is designed for maximum compatibility, 
-                // using both STUN (direct) and TURN (relay) servers.
-                const peerConfig = {
-                    initiator: isInit,
-                    trickle: false, // Ensures a single, complete SDP is generated for the share link
-                    config: {
-                        iceServers: [
-                            // STUN server for direct connection (fastest, preferred)
-                            { urls: 'stun:stun.l.google.com:19302' },
-                            // TURN server for relayed connection (required behind restrictive NAT/Firewalls)
-                            {
-                                urls: 'turn:openrelay.metered.ca:80',
-                                username: 'openrelayproject',
-                                credential: 'openrelayproject'
-                            }
-                        ]
-                    }
-                };
-
-                console.log("P2P STATUS: Initializing SimplePeer with full STUN/TURN configuration.", { isInitiator });
-                peer = new SimplePeer(peerConfig);
-            } catch (e) {
-                console.error("P2P ERROR: SimplePeer initialization failed.", e);
-                updateStatus("WebRTC setup failed. Ensure your browser supports it.", 'bg-red-100 text-red-800');
+        // Éléments DOM
+        const homePage = document.getElementById('home-page');
+        const hostPage = document.getElementById('host-page');
+        const codePage = document.getElementById('code-page');
+        const joinPage = document.getElementById('join-page');
+        const chatPage = document.getElementById('chat-page');
+        
+        const hostBtn = document.getElementById('host-btn');
+        const joinBtn = document.getElementById('join-btn');
+        const createChatBtn = document.getElementById('create-chat-btn');
+        const startChatBtn = document.getElementById('start-chat-btn');
+        const joinRoomBtn = document.getElementById('join-room-btn');
+        const leaveChatBtn = document.getElementById('leave-chat-btn');
+        const sendBtn = document.getElementById('send-btn');
+        
+        const hostNameInput = document.getElementById('host-name');
+        const joinNameInput = document.getElementById('join-name');
+        const roomCodeInput = document.getElementById('room-code-input');
+        const messageInput = document.getElementById('message-input');
+        
+        const roomCodeDisplay = document.getElementById('room-code');
+        const roomLinkDisplay = document.getElementById('room-link');
+        const chatMessages = document.getElementById('chat-messages');
+        const userCountDisplay = document.getElementById('user-count');
+        const usersListContainer = document.getElementById('users-list-container');
+        const pendingUsersList = document.getElementById('pending-users');
+        const connectedUsersList = document.getElementById('connected-users');
+        
+        const notification = document.getElementById('notification');
+        
+        // Variables d'état
+        let currentUser = null;
+        let currentRoom = null;
+        let isHost = false;
+        let chatType = 'public';
+        let peer = null;
+        let connections = [];
+        let users = [];
+        let pendingUsers = [];
+        
+        // Gestionnaires d'événements
+        hostBtn.addEventListener('click', () => {
+            homePage.classList.add('hidden');
+            hostPage.classList.remove('hidden');
+        });
+        
+        joinBtn.addEventListener('click', () => {
+            homePage.classList.add('hidden');
+            joinPage.classList.remove('hidden');
+        });
+        
+        createChatBtn.addEventListener('click', createRoom);
+        startChatBtn.addEventListener('click', startChat);
+        joinRoomBtn.addEventListener('click', joinRoom);
+        leaveChatBtn.addEventListener('click', leaveChat);
+        sendBtn.addEventListener('click', sendMessage);
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+        
+        // Fonctions principales
+        function createRoom() {
+            const userName = hostNameInput.value.trim();
+            if (!userName) {
+                showNotification('Veuillez entrer votre nom', 'error');
                 return;
             }
-
-            // --- Signaling Events (SDP Exchange) ---
-
-            peer.on('signal', data => {
-                const signalString = btoa(JSON.stringify(data)); // Base64 encode SDP
-                console.log(`P2P STATUS: Generated signal data (Length: ${signalString.length})`);
+            
+            currentUser = userName;
+            isHost = true;
+            chatType = document.getElementById('chat-type').value;
+            
+            // Générer un code de salon unique
+            const roomCode = generateRoomCode();
+            currentRoom = roomCode;
+            
+            // Afficher le code généré
+            roomCodeDisplay.textContent = roomCode;
+            roomLinkDisplay.textContent = `${window.location.href}#${roomCode}`;
+            roomLinkDisplay.href = `${window.location.href}#${roomCode}`;
+            
+            hostPage.classList.add('hidden');
+            codePage.classList.remove('hidden');
+        }
+        
+        function startChat() {
+            codePage.classList.add('hidden');
+            chatPage.classList.remove('hidden');
+            
+            // Initialiser PeerJS
+            initializePeer();
+            
+            // Afficher la liste des utilisateurs si le salon est privé
+            if (chatType === 'private') {
+                usersListContainer.classList.remove('hidden');
+            }
+            
+            // Ajouter l'hôte à la liste des utilisateurs
+            addUser(currentUser, true, true);
+            
+            showNotification('Salon créé avec succès !');
+        }
+        
+        function joinRoom() {
+            const userName = joinNameInput.value.trim();
+            const roomCode = roomCodeInput.value.trim();
+            
+            if (!userName || !roomCode) {
+                showNotification('Veuillez remplir tous les champs', 'error');
+                return;
+            }
+            
+            currentUser = userName;
+            currentRoom = roomCode;
+            
+            joinPage.classList.add('hidden');
+            chatPage.classList.remove('hidden');
+            
+            // Initialiser PeerJS
+            initializePeer();
+            
+            showNotification('Tentative de connexion au salon...');
+        }
+        
+        function initializePeer() {
+            // Initialiser PeerJS avec un ID aléatoire
+            peer = new Peer(null, {
+                debug: 2
+            });
+            
+            peer.on('open', (id) => {
+                console.log('Peer connecté avec ID:', id);
                 
-                if (isInitiator) {
-                    // Sender: Generate share link when the offer is ready
-                    const link = `${window.location.origin}${window.location.pathname}#${signalString}`;
-                    document.getElementById('share-link-input').value = link;
-                    document.getElementById('share-link-box').classList.remove('hidden');
-                    document.getElementById('initiator-wait-note').classList.remove('hidden');
-                    updateStatus("Link Generated. Share and wait for receiver's connection...", 'bg-yellow-100 text-yellow-800');
+                // Si c'est un hôte, on attend les connexions
+                if (isHost) {
+                    peer.on('connection', (conn) => {
+                        handleIncomingConnection(conn);
+                    });
                 } else {
-                    // Receiver: This signal is the answer, which would be sent back to the initiator in a production app.
-                    console.log("P2P STATUS: Generated Answer Signal. Waiting for connection state change.");
+                    // Si c'est un joiner, on se connecte à l'hôte
+                    connectToHost();
                 }
             });
-
-            // If receiver, immediately signal the offer from the URL hash
-            if (!isInit && offerData) {
-                try {
-                    console.log(`P2P STATUS: Detected offer data in URL hash (Length: ${offerData.length}). Signaling peer.`);
-                    const decodedOffer = JSON.parse(atob(offerData));
-                    peer.signal(decodedOffer);
-                    updateStatus("Attempting connection. Please wait...", 'bg-blue-100 text-blue-800');
-                } catch (e) {
-                    updateStatus("Invalid share link format. Cannot decode connection data.", 'bg-red-100 text-red-800');
-                    console.error("P2P ERROR: Error decoding signal data:", e);
-                }
-            }
-
-            // --- Connection Events ---
-
-            peer.on('connect', () => {
-                console.log("P2P STATUS: CONNECTION ESTABLISHED.");
-                updateStatus("P2P Connection Established! Chat is active.", 'bg-green-100 text-green-800');
-                document.getElementById('chat-send-button').disabled = false;
-                document.getElementById('chat-input').disabled = false;
+            
+            peer.on('error', (err) => {
+                console.error('Erreur PeerJS:', err);
+                showNotification('Erreur de connexion', 'error');
+            });
+        }
+        
+        function handleIncomingConnection(conn) {
+            console.log('Nouvelle connexion entrante:', conn.peer);
+            
+            conn.on('open', () => {
+                console.log('Connexion établie avec:', conn.peer);
                 
-                const initialMessage = document.getElementById('chat-window').querySelector('div');
-                if (initialMessage) initialMessage.remove(); 
-                document.getElementById('chat-section').classList.remove('hidden');
-
-                if (isInitiator && fileToSend) {
-                    sendFileMetadata();
+                // Si le salon est privé, ajouter à la liste d'attente
+                if (chatType === 'private' && !isUserApproved(conn.peer)) {
+                    addPendingUser(conn);
+                    return;
                 }
+                
+                // Sinon, accepter directement la connexion
+                acceptConnection(conn);
             });
-
-            peer.on('error', err => {
-                console.error('P2P ERROR: Connection failed or broke:', err);
-                updateStatus(`Connection Failed. Check your network or the Console (F12) for details.`, 'bg-red-600 text-white');
-                peer.destroy();
+            
+            conn.on('data', (data) => {
+                handleReceivedData(data, conn);
             });
-
-            peer.on('close', () => {
-                console.log("P2P STATUS: Connection closed.");
-                updateStatus("Connection closed by peer.", 'bg-red-100 text-red-800');
-                document.getElementById('chat-send-button').disabled = true;
-                document.getElementById('chat-input').disabled = true;
+            
+            conn.on('close', () => {
+                console.log('Connexion fermée avec:', conn.peer);
+                removeUser(conn.peer);
             });
-
-            // --- Data Events (File & Chat) ---
-            peer.on('data', receiveData);
-        }
-
-        // --- Chat Logic ---
-
-        function sendChatMessage() {
-            const input = document.getElementById('chat-input');
-            const message = input.value.trim();
-
-            if (message && peer && peer.connected) {
-                const payload = JSON.stringify({ type: 'chat', message: message });
-                peer.send(payload);
-                appendMessage('You', message, true);
-                input.value = '';
-            } else if (!peer || !peer.connected) {
-                updateStatus("Not connected. Cannot send message.", 'bg-red-100 text-red-800');
-            }
-        }
-
-        // --- File Sender Logic (Initiator) ---
-
-        /**
-         * Called when a file is selected.
-         */
-        document.getElementById('file-input').addEventListener('change', (e) => {
-            fileToSend = e.target.files[0];
-            const shareButton = document.getElementById('share-button');
-            if (fileToSend) {
-                shareButton.disabled = false;
-                updateStatus(`File selected: ${fileToSend.name} (${formatFileSize(fileToSend.size)})`, 'bg-blue-100 text-blue-800');
-            } else {
-                shareButton.disabled = true;
-                updateStatus("Select a file to begin.", 'bg-gray-100 text-gray-800');
-            }
-        });
-
-        /**
-         * Initiates the signaling process and prepares the file.
-         */
-        function startSharing() {
-            if (!fileToSend) return;
-
-            document.getElementById('share-button').disabled = true;
-            document.getElementById('share-button').textContent = 'Calculating Hash...';
-            updateStatus("Calculating file hash for integrity check...", 'bg-yellow-100 text-yellow-800');
-
-            // Calculate SHA-256 hash before initializing P2P and sending
-            calculateFileHash(fileToSend).then(hash => {
-                fileHashToSend = hash;
-                document.getElementById('share-button').textContent = 'Waiting for Connection...';
-
-                // 1. Initialize P2P connection (will generate the share link via signal event)
-                initializeP2P(true);
-
-            }).catch(e => {
-                console.error("P2P ERROR: Hashing failed:", e);
-                updateStatus("Error calculating file hash. Cannot proceed.", 'bg-red-100 text-red-800');
-                document.getElementById('share-button').textContent = 'Generate Share Link';
-                document.getElementById('share-button').disabled = false;
+            
+            conn.on('error', (err) => {
+                console.error('Erreur de connexion:', err);
+                removeUser(conn.peer);
             });
         }
-
-        /**
-         * Sends file metadata after connection is established.
-         */
-        function sendFileMetadata() {
-            const metadata = {
-                type: 'metadata',
-                name: fileToSend.name,
-                size: fileToSend.size,
-                hash: fileHashToSend,
-                chunks: Math.ceil(fileToSend.size / CHUNK_SIZE)
-            };
-            peer.send(JSON.stringify(metadata));
-            console.log("P2P STATUS: Sent file metadata.");
-            updateStatus(`Metadata sent. Starting file transfer...`, 'bg-blue-100 text-blue-800');
-
-            // Start sending chunks immediately after metadata
-            sendFileChunks();
+        
+        function connectToHost() {
+            // Dans un vrai scénario P2P, nous aurions besoin d'un mécanisme de découverte
+            // Pour cette démo, nous supposons que l'hôte a l'ID égal au code du salon
+            const hostId = currentRoom;
+            
+            const conn = peer.connect(hostId);
+            
+            conn.on('open', () => {
+                console.log('Connecté à l\'hôte');
+                
+                // Envoyer les informations de l'utilisateur
+                conn.send({
+                    type: 'user-join',
+                    user: currentUser,
+                    isHost: false
+                });
+                
+                // Ajouter l'utilisateur à la liste
+                addUser(currentUser, false, false);
+                
+                showNotification('Connecté au salon !');
+            });
+            
+            conn.on('data', (data) => {
+                handleReceivedData(data, conn);
+            });
+            
+            conn.on('close', () => {
+                console.log('Déconnecté de l\'hôte');
+                showNotification('Déconnecté du salon', 'warning');
+            });
+            
+            conn.on('error', (err) => {
+                console.error('Erreur de connexion à l\'hôte:', err);
+                showNotification('Impossible de se connecter au salon', 'error');
+            });
+            
+            connections.push(conn);
         }
-
-        /**
-         * Sends file data in chunks over the P2P data channel.
-         */
-        function sendFileChunks() {
-            let offset = 0;
-            const reader = new FileReader();
-
-            reader.onload = function(e) {
-                // Send chunk as a raw ArrayBuffer
-                peer.send(e.target.result);
-                offset += e.target.result.byteLength;
-
-                const percent = Math.floor((offset / fileToSend.size) * 100);
-                updateStatus(`Sending file: ${percent}% complete.`, 'bg-blue-100 text-blue-800');
-
-                if (offset < fileToSend.size) {
-                    // Send next chunk
-                    readNextChunk();
-                } else {
-                    console.log("P2P STATUS: File transfer complete.");
-                    updateStatus(`File transfer complete! Receiver can now download.`, 'bg-green-100 text-green-800');
-                    fileToSend = null; // Clear file after successful transfer
-                }
-            };
-
-            reader.onerror = (e) => {
-                console.error("P2P ERROR: File reading error on sender:", e);
-                updateStatus("File reading error. Transfer aborted.", 'bg-red-100 text-red-800');
-            };
-
-            function readNextChunk() {
-                const slice = fileToSend.slice(offset, offset + CHUNK_SIZE);
-                reader.readAsArrayBuffer(slice);
-            }
-
-            readNextChunk(); // Start the first chunk
-        }
-
-        // --- Hashing Logic ---
-
-        /**
-         * Calculates the SHA-256 hash of a File object.
-         */
-        function calculateFileHash(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = function() {
-                    try {
-                        const hash = sha256.create().update(new Uint8Array(reader.result)).hex();
-                        resolve(hash);
-                    } catch (e) {
-                        reject(e);
+        
+        function handleReceivedData(data, conn) {
+            console.log('Données reçues:', data);
+            
+            switch (data.type) {
+                case 'user-join':
+                    if (isHost) {
+                        // Si le salon est privé, demander l'approbation
+                        if (chatType === 'private') {
+                            addPendingUser(conn, data.user);
+                        } else {
+                            // Sinon, accepter directement
+                            acceptConnection(conn, data.user);
+                        }
                     }
-                };
-                reader.onerror = reject;
-                reader.readAsArrayBuffer(file);
-            });
-        }
-
-        // --- File Receiver Logic (All peers receive data) ---
-
-        /**
-         * Handles incoming data from the peer.
-         */
-        function receiveData(data) {
-            // Check if the data is a JSON string (for metadata or chat)
-            if (typeof data === 'string') {
-                try {
-                    const payload = JSON.parse(data);
-                    if (payload.type === 'metadata') {
-                        handleMetadata(payload);
-                    } else if (payload.type === 'chat') {
-                        appendMessage('Peer', payload.message, false);
-                    }
-                } catch (e) {
-                    // Ignore non-JSON strings (like internal signaling from the peer)
-                    // console.log("Received non-JSON string/control data:", data); 
-                }
-            } else if (data instanceof ArrayBuffer) {
-                // Data is a file chunk
-                handleFileChunk(data);
+                    break;
+                    
+                case 'message':
+                    displayMessage(data.message, data.user, false);
+                    break;
+                    
+                case 'user-list':
+                    updateUserList(data.users);
+                    break;
+                    
+                case 'user-approved':
+                    addUser(currentUser, false, false);
+                    showNotification('Vous avez été approuvé pour rejoindre le salon');
+                    break;
+                    
+                case 'user-rejected':
+                    showNotification('Votre demande a été rejetée', 'error');
+                    leaveChat();
+                    break;
+                    
+                case 'host-promoted':
+                    isHost = true;
+                    showNotification('Vous êtes maintenant hôte du salon');
+                    break;
             }
         }
-
-        /**
-         * Handles incoming file metadata.
-         */
-        function handleMetadata(metadata) {
-            console.log("P2P STATUS: Received file metadata.", metadata);
-            fileMetadata = metadata;
-            receivedBuffer = [];
-            receivedSize = 0;
-
-            const infoEl = document.getElementById('file-receive-info');
-            infoEl.className = 'p-4 bg-blue-50 rounded-lg border-l-4 border-blue-500 text-blue-800';
-            infoEl.innerHTML = `
-                <p>Ready to receive **${metadata.name}**</p>
-                <p class="text-sm">Size: **${formatFileSize(metadata.size)}**</p>
-                <p class="text-xs mt-1">Status: Transfer in progress...</p>
+        
+        function addPendingUser(conn, userName) {
+            const user = {
+                id: conn.peer,
+                name: userName,
+                connection: conn
+            };
+            
+            pendingUsers.push(user);
+            
+            // Afficher dans l'interface
+            const userItem = document.createElement('div');
+            userItem.className = 'user-item';
+            userItem.innerHTML = `
+                <span>${userName}</span>
+                <div class="user-actions">
+                    <button class="btn btn-success approve-btn">Accepter</button>
+                    <button class="btn btn-danger reject-btn">Rejeter</button>
+                </div>
             `;
-            document.getElementById('download-progress-bar').classList.remove('hidden');
-            updateStatus("Receiving file chunks...", 'bg-yellow-100 text-yellow-800');
+            
+            userItem.querySelector('.approve-btn').addEventListener('click', () => {
+                approveUser(user);
+            });
+            
+            userItem.querySelector('.reject-btn').addEventListener('click', () => {
+                rejectUser(user);
+            });
+            
+            pendingUsersList.appendChild(userItem);
+            
+            // Afficher une notification à l'hôte
+            if (isHost) {
+                displaySystemMessage(`${userName} souhaite rejoindre le salon`);
+            }
         }
-
-        /**
-         * Handles incoming file chunks.
-         */
-        function handleFileChunk(chunk) {
-            if (!fileMetadata) return; 
-
-            receivedBuffer.push(chunk);
-            receivedSize += chunk.byteLength;
-
-            const percent = Math.floor((receivedSize / fileMetadata.size) * 100);
-            const progressBar = document.getElementById('progress-bar');
-            progressBar.style.width = `${percent}%`;
-
-            if (receivedSize >= fileMetadata.size) {
-                // Transfer complete
-                const completeFile = new Blob(receivedBuffer);
-                updateStatus("Transfer Complete! Verifying file integrity...", 'bg-yellow-500 text-white');
-
-                // Verify SHA-256 integrity
-                calculateFileHash(completeFile).then(calculatedHash => {
-                    const downloadButton = document.getElementById('download-button');
-                    if (calculatedHash === fileMetadata.hash) {
-                        console.log("P2P STATUS: Hash check passed.");
-                        updateStatus("Integrity CHECK PASSED. File is ready to download.", 'bg-green-600 text-white');
-                        downloadButton.disabled = false;
-                        downloadButton.textContent = `Download ${fileMetadata.name} (${formatFileSize(fileMetadata.size)})`;
-                        downloadButton.classList.remove('hidden');
-                        document.getElementById('file-receive-info').classList.add('hidden');
-                        document.getElementById('download-progress-bar').classList.add('hidden');
-                    } else {
-                        console.error("P2P ERROR: Hash check failed! Received:", calculatedHash, "Expected:", fileMetadata.hash);
-                        updateStatus("Integrity CHECK FAILED! DO NOT DOWNLOAD.", 'bg-red-600 text-white');
-                        downloadButton.disabled = true;
-                        downloadButton.textContent = `Verification Failed!`;
+        
+        function approveUser(user) {
+            // Retirer de la liste d'attente
+            pendingUsers = pendingUsers.filter(u => u.id !== user.id);
+            updatePendingUsersList();
+            
+            // Accepter la connexion
+            acceptConnection(user.connection, user.name);
+            
+            // Envoyer une confirmation à l'utilisateur
+            user.connection.send({
+                type: 'user-approved'
+            });
+        }
+        
+        function rejectUser(user) {
+            // Retirer de la liste d'attente
+            pendingUsers = pendingUsers.filter(u => u.id !== user.id);
+            updatePendingUsersList();
+            
+            // Envoyer un rejet à l'utilisateur
+            user.connection.send({
+                type: 'user-rejected'
+            });
+            
+            // Fermer la connexion
+            user.connection.close();
+        }
+        
+        function acceptConnection(conn, userName) {
+            // Ajouter à la liste des utilisateurs
+            addUser(userName, false, false);
+            
+            // Ajouter à la liste des connexions
+            connections.push(conn);
+            
+            // Configurer les gestionnaires d'événements
+            conn.on('data', (data) => {
+                handleReceivedData(data, conn);
+            });
+            
+            conn.on('close', () => {
+                removeUser(conn.peer);
+            });
+            
+            // Envoyer la liste actuelle des utilisateurs
+            if (isHost) {
+                broadcastUserList();
+            }
+        }
+        
+        function addUser(userName, isHostUser, isSelf) {
+            const user = {
+                id: peer.id,
+                name: userName,
+                isHost: isHostUser,
+                isSelf: isSelf
+            };
+            
+            // Vérifier si l'utilisateur existe déjà
+            const existingUserIndex = users.findIndex(u => u.id === user.id);
+            if (existingUserIndex === -1) {
+                users.push(user);
+            } else {
+                users[existingUserIndex] = user;
+            }
+            
+            updateUserList(users);
+            
+            if (!isSelf) {
+                displaySystemMessage(`${userName} a rejoint le salon`);
+            }
+        }
+        
+        function removeUser(userId) {
+            const user = users.find(u => u.id === userId);
+            if (user) {
+                displaySystemMessage(`${user.name} a quitté le salon`);
+            }
+            
+            users = users.filter(u => u.id !== userId);
+            connections = connections.filter(c => c.peer !== userId);
+            
+            updateUserList(users);
+        }
+        
+        function updateUserList(userList) {
+            // Mettre à jour le compteur d'utilisateurs
+            userCountDisplay.textContent = `${userList.length} utilisateur${userList.length > 1 ? 's' : ''}`;
+            
+            // Mettre à jour la liste des utilisateurs connectés (pour l'hôte)
+            if (isHost) {
+                connectedUsersList.innerHTML = '';
+                
+                userList.forEach(user => {
+                    const userItem = document.createElement('div');
+                    userItem.className = 'user-item';
+                    
+                    let actions = '';
+                    if (!user.isHost && user.id !== peer.id) {
+                        actions = `<button class="btn btn-warning promote-btn">Donner le rôle d'hôte</button>`;
                     }
-                }).catch(e => {
-                    console.error("P2P ERROR: Verification hash calculation error:", e);
-                    updateStatus("Verification Error. Cannot download.", 'bg-red-600 text-white');
+                    
+                    userItem.innerHTML = `
+                        <span>${user.name} ${user.isHost ? '(Hôte)' : ''}</span>
+                        <div class="user-actions">${actions}</div>
+                    `;
+                    
+                    if (actions) {
+                        userItem.querySelector('.promote-btn').addEventListener('click', () => {
+                            promoteToHost(user);
+                        });
+                    }
+                    
+                    connectedUsersList.appendChild(userItem);
                 });
             }
         }
-
-        /**
-         * Triggers the file download using the collected Blob.
-         */
-        function downloadFile() {
-            if (!fileMetadata || receivedBuffer.length === 0) return;
-
-            const blob = new Blob(receivedBuffer);
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = fileMetadata.name;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-
-            updateStatus("Download started. Transfer session complete.", 'bg-indigo-100 text-indigo-800');
+        
+        function updatePendingUsersList() {
+            pendingUsersList.innerHTML = '';
+            
+            pendingUsers.forEach(user => {
+                const userItem = document.createElement('div');
+                userItem.className = 'user-item';
+                userItem.innerHTML = `
+                    <span>${user.name}</span>
+                    <div class="user-actions">
+                        <button class="btn btn-success approve-btn">Accepter</button>
+                        <button class="btn btn-danger reject-btn">Rejeter</button>
+                    </div>
+                `;
+                
+                userItem.querySelector('.approve-btn').addEventListener('click', () => {
+                    approveUser(user);
+                });
+                
+                userItem.querySelector('.reject-btn').addEventListener('click', () => {
+                    rejectUser(user);
+                });
+                
+                pendingUsersList.appendChild(userItem);
+            });
         }
-
-        // --- Initialization on Load ---
-
-        window.onload = function() {
-            const hash = window.location.hash.substring(1);
-            const initiatorView = document.getElementById('initiator-view');
-            const receiverView = document.getElementById('receiver-view');
-
-            if (hash) {
-                // Receiver Mode
-                receiverView.classList.remove('hidden');
-                updateStatus("Share link detected. Preparing to connect...", 'bg-yellow-100 text-yellow-800');
-                initializeP2P(false, hash);
-            } else {
-                // Initiator Mode
-                initiatorView.classList.remove('hidden');
-                updateStatus("Welcome! Select a file to share.", 'bg-gray-100 text-gray-800');
+        
+        function promoteToHost(user) {
+            // Trouver la connexion de l'utilisateur
+            const userConn = connections.find(c => c.peer === user.id);
+            
+            if (userConn) {
+                // Envoyer la promotion
+                userConn.send({
+                    type: 'host-promoted'
+                });
+                
+                // Mettre à jour le statut de l'utilisateur
+                const userIndex = users.findIndex(u => u.id === user.id);
+                if (userIndex !== -1) {
+                    users[userIndex].isHost = true;
+                }
+                
+                // Mettre à jour l'interface
+                updateUserList(users);
+                
+                displaySystemMessage(`${user.name} est maintenant hôte du salon`);
             }
-        };
+        }
+        
+        function broadcastUserList() {
+            const userListData = {
+                type: 'user-list',
+                users: users
+            };
+            
+            connections.forEach(conn => {
+                if (conn.open) {
+                    conn.send(userListData);
+                }
+            });
+        }
+        
+        function sendMessage() {
+            const message = messageInput.value.trim();
+            if (!message) return;
+            
+            // Afficher le message localement
+            displayMessage(message, currentUser, true);
+            
+            // Envoyer le message à tous les autres utilisateurs
+            const messageData = {
+                type: 'message',
+                message: message,
+                user: currentUser
+            };
+            
+            connections.forEach(conn => {
+                if (conn.open) {
+                    conn.send(messageData);
+                }
+            });
+            
+            // Vider le champ de saisie
+            messageInput.value = '';
+        }
+        
+        function displayMessage(message, sender, isOwn) {
+            const messageElement = document.createElement('div');
+            messageElement.className = `message ${isOwn ? 'own' : 'other'}`;
+            
+            if (!isOwn) {
+                const senderElement = document.createElement('div');
+                senderElement.className = 'message-sender';
+                senderElement.textContent = sender;
+                messageElement.appendChild(senderElement);
+            }
+            
+            const textElement = document.createElement('div');
+            textElement.textContent = message;
+            messageElement.appendChild(textElement);
+            
+            chatMessages.appendChild(messageElement);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        function displaySystemMessage(message) {
+            const messageElement = document.createElement('div');
+            messageElement.className = 'message system';
+            messageElement.textContent = message;
+            
+            chatMessages.appendChild(messageElement);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        function leaveChat() {
+            // Fermer toutes les connexions
+            connections.forEach(conn => {
+                conn.close();
+            });
+            
+            // Fermer le peer
+            if (peer) {
+                peer.destroy();
+            }
+            
+            // Réinitialiser l'état
+            currentUser = null;
+            currentRoom = null;
+            isHost = false;
+            connections = [];
+            users = [];
+            pendingUsers = [];
+            
+            // Retourner à la page d'accueil
+            chatPage.classList.add('hidden');
+            homePage.classList.remove('hidden');
+            
+            // Vider les champs de saisie
+            hostNameInput.value = '';
+            joinNameInput.value = '';
+            roomCodeInput.value = '';
+            messageInput.value = '';
+            chatMessages.innerHTML = '';
+            pendingUsersList.innerHTML = '';
+            connectedUsersList.innerHTML = '';
+        }
+        
+        function generateRoomCode() {
+            // Générer un code alphanumérique de 6 caractères
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let result = '';
+            for (let i = 0; i < 6; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
+        
+        function isUserApproved(userId) {
+            return users.some(user => user.id === userId);
+        }
+        
+        function showNotification(message, type = 'success') {
+            notification.textContent = message;
+            notification.className = 'notification';
+            notification.classList.add(type);
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Vérifier s'il y a un code de salon dans l'URL
+        window.addEventListener('DOMContentLoaded', () => {
+            const hash = window.location.hash.substring(1);
+            if (hash) {
+                roomCodeInput.value = hash;
+                joinPage.classList.remove('hidden');
+                homePage.classList.add('hidden');
+            }
+        });
     </script>
-
+    
+    <!-- Inclure PeerJS depuis CDN -->
+    <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
 </body>
 </html>
