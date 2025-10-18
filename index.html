@@ -3,103 +3,140 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>P2P File Transfer Button</title>
-  <style>body{font-family:system-ui,Segoe UI,Roboto,Arial;margin:18px;color:#111}button{margin:6px 0;padding:8px}</style>
+  <title>P2P File & Chat Transfer</title>
+  <style>
+    body{font-family:system-ui,Segoe UI,Roboto,Arial;margin:18px;color:#111}
+    button{margin:6px 0;padding:8px}
+    #chat{border:1px solid #ccc;padding:8px;height:200px;overflow-y:auto;margin-top:12px}
+    #msgInput{width:80%;padding:4px}
+  </style>
   <script src="https://unpkg.com/simple-peer@9.11.1/simplepeer.min.js"></script>
 </head>
 <body>
-<h3>P2P File Transfer — avec bouton</h3>
-<p>Émetteur : choisit un fichier et partage le lien. Destinataire : clique sur "Télécharger".</p>
-<input id="fileinput" type="file" />
+<h3>P2P File & Chat Transfer</h3>
 <div id="linkContainer" style="margin-top:12px"></div>
 <div id="recvContainer" style="margin-top:12px"></div>
+<div id="sendContainer" style="margin-top:12px"></div>
+<div id="chatContainer" style="margin-top:12px;display:none">
+  <div id="chat"></div>
+  <input type="text" id="msgInput" placeholder="Écrire un message..." />
+  <button id="sendMsg">Envoyer</button>
+</div>
 <script>
 const CHUNK_SIZE = 64*1024;
 let peer;
 let file;
-let fileHash;
+let buffers=[];
+
+const linkContainer = document.getElementById('linkContainer');
+const recvContainer = document.getElementById('recvContainer');
+const sendContainer = document.getElementById('sendContainer');
+const chatContainer = document.getElementById('chatContainer');
+const chatBox = document.getElementById('chat');
+const msgInput = document.getElementById('msgInput');
+const sendMsgBtn = document.getElementById('sendMsg');
 
 function bufToHex(buffer){return Array.from(new Uint8Array(buffer)).map(b=>b.toString(16).padStart(2,'0')).join('')}
 async function sha256(ab){const h = await crypto.subtle.digest('SHA-256', ab); return bufToHex(h)}
 
-const fileInput = document.getElementById('fileinput');
-const linkContainer = document.getElementById('linkContainer');
-const recvContainer = document.getElementById('recvContainer');
+function addChatMessage(sender,text){
+  const p = document.createElement('p');
+  p.textContent = sender+': '+text;
+  chatBox.appendChild(p);
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
 
-fileInput.addEventListener('change', async e => {
-  file = e.target.files[0];
-  if(!file) return;
-  const ab = await file.arrayBuffer();
-  fileHash = await sha256(ab);
-  peer = new SimplePeer({initiator:true,trickle:false});
+sendMsgBtn.onclick = ()=>{
+  const text = msgInput.value.trim();
+  if(text && peer && peer.connected){
+    peer.send(JSON.stringify({type:'chat', text}));
+    addChatMessage('Moi', text);
+    msgInput.value='';
+  }
+};
 
-  peer.on('signal', data => {
-    const sdpB64 = btoa(JSON.stringify(data));
-    const link = location.origin + location.pathname + '#offer=' + sdpB64;
-    linkContainer.innerHTML = `<p>Lien à partager: <a href='${link}' target='_blank'>${link}</a></p>`;
-    navigator.clipboard && navigator.clipboard.writeText(link).catch(()=>{});
-  });
-
-  peer.on('connect', async ()=>{
-    const stream = file.stream();
-    const reader = stream.getReader();
-    let sent=0;
-    while(true){
-      const {value, done} = await reader.read();
-      if(done) break;
-      let offset=0;
-      while(offset<value.byteLength){
-        const slice = value.subarray(offset, offset+CHUNK_SIZE);
-        peer.send(slice);
-        offset += CHUNK_SIZE;
-        sent += slice.byteLength;
-      }
-    }
-    peer.send(JSON.stringify({type:'end', name:file.name, sha256:fileHash}));
-  });
-});
-
-// Récepteur avec bouton
 const params = new URLSearchParams(location.hash.replace('#','?'));
 if(params.has('offer')){
+  // Récepteur
   const offerB64 = params.get('offer');
   const offer = JSON.parse(atob(offerB64));
   peer = new SimplePeer({initiator:false,trickle:false});
-  let buffers=[];
-  let fileMeta = {};
   let downloadBtn;
+  let fileName='';
+  let expectedHash='';
 
-  peer.on('signal', ans=>{console.log('Réponse prête')});
-
-  peer.on('data', async d => {
-    if(typeof d==='string'){ 
-      try{
-        const msg = JSON.parse(d);
-        if(msg.type==='end'){
-          const total = buffers.reduce((s,b)=>s+b.byteLength,0);
-          const tmp = new Uint8Array(total); let off=0; for(const b of buffers){ tmp.set(new Uint8Array(b), off); off+=b.byteLength; }
-          const blob = new Blob([tmp]);
-          if(!downloadBtn){
-            downloadBtn = document.createElement('button');
-            downloadBtn.textContent = `Télécharger ${msg.name}`;
-            downloadBtn.onclick = ()=>{
-              const a = document.createElement('a');
-              a.href = URL.createObjectURL(blob);
-              a.download = msg.name;
-              a.click();
-            };
-            recvContainer.appendChild(downloadBtn);
-          }
+  peer.on('data', async d=>{
+    try{
+      const msg = JSON.parse(d);
+      if(msg.type==='chat'){
+        addChatMessage('Autre', msg.text);
+      } else if(msg.type==='end'){
+        const total = buffers.reduce((s,b)=>s+b.byteLength,0);
+        const tmp = new Uint8Array(total); let off=0; for(const b of buffers){ tmp.set(new Uint8Array(b), off); off+=b.byteLength; }
+        const blob = new Blob([tmp]);
+        fileName = msg.name; expectedHash = msg.sha256;
+        if(!downloadBtn){
+          downloadBtn = document.createElement('button');
+          downloadBtn.textContent = `Télécharger ${fileName}`;
+          downloadBtn.onclick = ()=>{
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = fileName;
+            a.click();
+          };
+          recvContainer.appendChild(downloadBtn);
           const hash = await sha256(tmp.buffer);
           const info = document.createElement('p');
-          info.textContent = `Intégrité SHA256: ${hash===msg.sha256?'OK':'ÉCHEC'}`;
+          info.textContent = `Intégrité SHA256: ${hash===expectedHash?'OK':'ÉCHEC'}`;
           recvContainer.appendChild(info);
         }
-      } catch(e){}
-    } else { buffers.push(d); }
+      }
+    } catch(e){
+      buffers.push(d);
+    }
   });
+
+  peer.on('connect', ()=>{ chatContainer.style.display='block'; addChatMessage('Système','Connexion établie'); });
   peer.signal(offer);
-}
+} else {
+  // Émetteur
+  const input = document.createElement('input');
+  input.type='file';
+  sendContainer.appendChild(input);
+
+  input.addEventListener('change', async e=>{
+    file = e.target.files[0];
+    if(!file) return;
+    const ab = await file.arrayBuffer();
+    const fileHash = await sha256(ab);
+    peer = new SimplePeer({initiator:true,trickle:false});
+
+    peer.on('signal', data=>{
+      const sdpB64 = btoa(JSON.stringify(data));
+      const link = location.origin + location.pathname + '#offer=' + sdpB64;
+      linkContainer.innerHTML = `<p>Lien à partager pour téléchargement & chat: <a href='${link}' target='_blank'>${link}</a></p>`;
+      navigator.clipboard && navigator.clipboard.writeText(link).catch(()=>{});
+    });
+
+    peer.on('connect', async ()=>{
+      chatContainer.style.display='block';
+      addChatMessage('Système','Connexion établie');
+      const stream = file.stream();
+      const reader = stream.getReader();
+      while(true){
+        const {value,done} = await reader.read();
+        if(done) break;
+        let offset=0;
+        while(offset<value.byteLength){
+          const slice = value.subarray(offset, offset+CHUNK_SIZE);
+          peer.send(slice);
+          offset+=CHUNK_SIZE;
+        }
+      }
+      peer.send(JSON.stringify({type:'end', name:file.name, sha256:fileHash}));
+    });
+  });
+} 
 </script>
 </body>
 </html>
