@@ -2,6 +2,11 @@
 let selectedFiles = [];
 let shareId = null;
 
+// WebRTC pour le partage entre machines
+let peerConnection = null;
+let dataChannel = null;
+let isHost = false;
+
 // Éléments DOM
 const dropZone = document.getElementById('dropZone');
 const fileInput = document.getElementById('fileInput');
@@ -15,10 +20,11 @@ const copyLinkBtn = document.getElementById('copyLinkBtn');
 // Vérifier si on est sur la page de téléchargement
 const urlParams = new URLSearchParams(window.location.search);
 const downloadId = urlParams.get('download');
+const dataParam = urlParams.get('data');
 
-if (downloadId) {
+if (downloadId || dataParam) {
     // Mode téléchargement
-    initDownloadMode(downloadId);
+    initDownloadMode(downloadId, dataParam);
 } else {
     // Mode envoi
     initUploadMode();
@@ -41,7 +47,7 @@ function initUploadMode() {
     copyLinkBtn.addEventListener('click', copyToClipboard);
 }
 
-function initDownloadMode(downloadId) {
+function initDownloadMode(downloadId, dataParam) {
     // Changer le contenu de la page pour le mode téléchargement
     document.querySelector('.header').innerHTML = `
         <h1 class="title">Téléchargement</h1>
@@ -51,8 +57,24 @@ function initDownloadMode(downloadId) {
     // Masquer la zone de dépôt
     dropZone.style.display = 'none';
     
-    // Vérifier si les fichiers sont disponibles
-    checkFilesAvailability(downloadId);
+    // Vérifier le type de données
+    if (dataParam) {
+        // Données encodées dans l'URL (partage inter-machines)
+        checkURLData(dataParam);
+    } else if (downloadId) {
+        // Données dans localStorage (même machine seulement)
+        checkFilesAvailability(downloadId);
+    }
+}
+
+function checkURLData(encodedData) {
+    try {
+        // Décoder les données de l'URL
+        const fileData = JSON.parse(atob(encodedData));
+        showDownloadInterface(fileData);
+    } catch (error) {
+        showError('Erreur de données', 'Impossible de décoder les fichiers depuis l\'URL.');
+    }
 }
 
 function handleDragOver(e) {
@@ -159,37 +181,82 @@ function generateShareLink() {
     // Générer un ID unique pour le partage
     shareId = generateUniqueId();
     
-    // Stocker les fichiers dans le localStorage avec une clé unique
+    // Vérifier la taille totale des fichiers
+    const totalSize = selectedFiles.reduce((sum, file) => sum + file.size, 0);
+    const maxSize = 5 * 1024 * 1024; // 5MB limite pour l'URL
+    
+    if (totalSize > maxSize) {
+        // Pour les gros fichiers, utiliser le système local avec avertissement
+        generateLocalShareLink();
+    } else {
+        // Pour les petits fichiers, utiliser l'URL directe
+        generateURLShareLink();
+    }
+}
+
+function generateLocalShareLink() {
+    // Système original avec localStorage (fonctionne seulement sur la même machine)
     const fileData = {
         id: shareId,
         files: selectedFiles.map(file => ({
             name: file.name,
             size: file.size,
             type: file.type,
-            data: null // Sera rempli après conversion
+            data: null
         })),
         timestamp: Date.now()
     };
     
-    // Convertir les fichiers en base64 pour le stockage
     convertFilesToBase64(selectedFiles).then(base64Files => {
         fileData.files.forEach((file, index) => {
             file.data = base64Files[index];
         });
         
-        // Stocker dans localStorage
         localStorage.setItem(`fileshare_${shareId}`, JSON.stringify(fileData));
         
-        // Générer le lien de partage
         const shareUrl = `${window.location.origin}${window.location.pathname}?download=${shareId}`;
         generatedLink.value = shareUrl;
         
-        // Afficher le lien
         shareLink.style.display = 'block';
+        shareLink.scrollIntoView({ behavior: 'smooth' });
         
-        // Scroll vers le lien
+        // Afficher un avertissement
+        showSharingWarning();
+    });
+}
+
+function generateURLShareLink() {
+    // Encoder les fichiers directement dans l'URL
+    convertFilesToBase64(selectedFiles).then(base64Files => {
+        const fileData = {
+            id: shareId,
+            files: selectedFiles.map((file, index) => ({
+                name: file.name,
+                size: file.size,
+                type: file.type,
+                data: base64Files[index]
+            })),
+            timestamp: Date.now()
+        };
+        
+        // Encoder en base64 pour l'URL
+        const encodedData = btoa(JSON.stringify(fileData));
+        const shareUrl = `${window.location.origin}${window.location.pathname}?data=${encodedData}`;
+        
+        generatedLink.value = shareUrl;
+        shareLink.style.display = 'block';
         shareLink.scrollIntoView({ behavior: 'smooth' });
     });
+}
+
+function showSharingWarning() {
+    const warningElement = document.querySelector('.warning');
+    if (warningElement) {
+        warningElement.innerHTML = `
+            ⚠️ <strong>Limitation :</strong> Ce lien ne fonctionne que sur la même machine et le même navigateur.<br>
+            <small>Pour partager entre machines, utilisez des fichiers plus petits (&lt;5MB) ou un service de stockage cloud.</small>
+        `;
+    }
 }
 
 function convertFilesToBase64(files) {
@@ -253,9 +320,16 @@ function checkFilesAvailability(downloadId) {
 function showDownloadInterface(data) {
     const mainContent = document.querySelector('.main-content');
     
+    // Déterminer le type de partage
+    const isURLShare = window.location.search.includes('data=');
+    const shareTypeInfo = isURLShare ? 
+        '<p style="color: #16bf78; margin-bottom: 1rem;">✅ Partage inter-machines activé</p>' :
+        '<p style="color: #ffc107; margin-bottom: 1rem;">⚠️ Partage local uniquement</p>';
+    
     mainContent.innerHTML = `
         <div class="files-list">
             <h3>Fichiers disponibles</h3>
+            ${shareTypeInfo}
             <div class="files-container" id="downloadFilesContainer"></div>
             <button class="btn btn-primary" id="downloadAllBtn">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
