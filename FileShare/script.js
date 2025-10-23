@@ -8,6 +8,13 @@ let isHost = false;
 let roomData = null;
 let roomCheckInterval = null;
 
+// Système cross-machine
+let peerConnection = null;
+let dataChannel = null;
+let isCrossMachine = false;
+let networkDiscovery = null;
+let rendezvousServer = 'https://api.github.com'; // Utilisé comme serveur de rendez-vous gratuit
+
 // Éléments DOM
 const dropZone = document.getElementById('dropZone');
 const fileInput = document.getElementById('fileInput');
@@ -23,6 +30,8 @@ const urlParams = new URLSearchParams(window.location.search);
 const downloadId = urlParams.get('download');
 const dataParam = urlParams.get('data');
 const roomParam = urlParams.get('room');
+const crossParam = urlParams.get('cross');
+const answerParam = urlParams.get('answer');
 
 if (downloadId || dataParam) {
     // Mode téléchargement (ancien système)
@@ -30,6 +39,12 @@ if (downloadId || dataParam) {
 } else if (roomParam) {
     // Mode téléchargement avec rooms auto-hébergées
     initSelfHostedDownloadMode(roomParam);
+} else if (crossParam) {
+    // Mode téléchargement cross-machine
+    initCrossMachineDownloadMode(crossParam);
+} else if (answerParam) {
+    // Mode réponse WebRTC cross-machine
+    handleWebRTCAnswer(answerParam);
 } else {
     // Mode envoi
     initUploadMode();
@@ -198,13 +213,25 @@ function generateShareLink() {
     shareId = generateUniqueId();
     roomId = shareId;
     
-    console.log('Génération de lien de partage avec rooms auto-hébergées:');
+    console.log('Génération de lien de partage:');
     console.log('- Nombre de fichiers:', selectedFiles.length);
     console.log('- Room ID:', roomId);
     
-    // Initialiser la room comme hôte
-    isHost = true;
-    initSelfHostedRoom();
+    // Détecter le type de partage souhaité
+    const totalSize = selectedFiles.reduce((sum, file) => sum + file.size, 0);
+    const maxLocalSize = 10 * 1024 * 1024; // 10MB limite pour le partage local
+    
+    if (totalSize > maxLocalSize) {
+        // Gros fichiers : utiliser le partage cross-machine
+        console.log('Fichiers volumineux détectés, utilisation du mode cross-machine');
+        isCrossMachine = true;
+        initCrossMachineSharing();
+    } else {
+        // Petits fichiers : utiliser le système de rooms local
+        console.log('Fichiers légers, utilisation du système de rooms local');
+        isCrossMachine = false;
+        initSelfHostedRoom();
+    }
 }
 
 function initSelfHostedRoom() {
@@ -256,6 +283,391 @@ function initSelfHostedRoom() {
         console.error('Erreur lors de la création de la room:', error);
         showConnectionStatus('Erreur de création de room', 'error');
     }
+}
+
+// Système de partage cross-machine
+async function initCrossMachineSharing() {
+    try {
+        isHost = true;
+        
+        // Créer une connexion WebRTC
+        await createPeerConnection();
+        
+        // Créer le canal de données
+        dataChannel = peerConnection.createDataChannel('fileshare', {
+            ordered: true
+        });
+        
+        setupDataChannelEvents();
+        
+        // Générer une offre WebRTC
+        const offer = await peerConnection.createOffer();
+        await peerConnection.setLocalDescription(offer);
+        
+        // Encoder l'offre dans l'URL
+        const offerData = {
+            type: 'offer',
+            offer: offer,
+            roomId: roomId,
+            timestamp: Date.now()
+        };
+        
+        const encodedOffer = btoa(JSON.stringify(offerData));
+        const shareUrl = `${window.location.origin}${window.location.pathname}?cross=${encodedOffer}`;
+        
+        generatedLink.value = shareUrl;
+        shareLink.style.display = 'block';
+        shareLink.scrollIntoView({ behavior: 'smooth' });
+        
+        showConnectionStatus('Mode cross-machine activé! En attente de connexion...', 'success');
+        
+        console.log('Partage cross-machine initialisé');
+        
+    } catch (error) {
+        console.error('Erreur lors de l\'initialisation cross-machine:', error);
+        showConnectionStatus('Erreur cross-machine', 'error');
+    }
+}
+
+async function createPeerConnection() {
+    const configuration = {
+        iceServers: [
+            { urls: 'stun:stun.l.google.com:19302' },
+            { urls: 'stun:stun1.l.google.com:19302' },
+            { urls: 'stun:stun2.l.google.com:19302' },
+            { urls: 'stun:stun3.l.google.com:19302' },
+            { urls: 'stun:stun4.l.google.com:19302' }
+        ]
+    };
+    
+    peerConnection = new RTCPeerConnection(configuration);
+    
+    // Gérer les candidats ICE
+    peerConnection.onicecandidate = (event) => {
+        if (event.candidate) {
+            console.log('Candidat ICE généré:', event.candidate);
+            // Les candidats ICE seront échangés via l'URL
+        }
+    };
+    
+    // Gérer les changements de connexion
+    peerConnection.onconnectionstatechange = () => {
+        console.log('État de connexion:', peerConnection.connectionState);
+        updateConnectionStatus(peerConnection.connectionState);
+    };
+    
+    // Gérer les canaux de données entrants
+    peerConnection.ondatachannel = (event) => {
+        dataChannel = event.channel;
+        setupReceiverDataChannelEvents();
+    };
+}
+
+function setupDataChannelEvents() {
+    dataChannel.onopen = () => {
+        console.log('Canal de données ouvert (expéditeur)');
+        showConnectionStatus('Connexion établie! Envoi des fichiers...', 'success');
+        sendFilesCrossMachine();
+    };
+    
+    dataChannel.onclose = () => {
+        console.log('Canal de données fermé');
+        showConnectionStatus('Connexion fermée', 'error');
+    };
+    
+    dataChannel.onerror = (error) => {
+        console.error('Erreur du canal de données:', error);
+        showConnectionStatus('Erreur de transmission', 'error');
+    };
+}
+
+function setupReceiverDataChannelEvents() {
+    let receivedFiles = [];
+    let fileBuffers = {};
+    
+    dataChannel.onopen = () => {
+        console.log('Canal de données ouvert (récepteur)');
+        showConnectionStatus('Connexion établie! Réception des fichiers...', 'success');
+    };
+    
+    dataChannel.onmessage = (event) => {
+        try {
+            const data = JSON.parse(event.data);
+            
+            switch (data.type) {
+                case 'metadata':
+                    console.log('Métadonnées reçues:', data.files);
+                    receivedFiles = data.files;
+                    showReceivedFilesCrossMachine(data.files);
+                    break;
+                    
+                case 'chunk':
+                    if (!fileBuffers[data.fileIndex]) {
+                        fileBuffers[data.fileIndex] = new Uint8Array(receivedFiles[data.fileIndex].size);
+                    }
+                    
+                    const buffer = new Uint8Array(data.data);
+                    fileBuffers[data.fileIndex].set(buffer, data.offset);
+                    
+                    updateProgressCrossMachine(data.fileIndex, data.offset, receivedFiles[data.fileIndex].size);
+                    break;
+                    
+                case 'complete':
+                    console.log('Réception terminée');
+                    showConnectionStatus('Tous les fichiers reçus!', 'success');
+                    prepareDownloadsCrossMachine(receivedFiles, fileBuffers);
+                    break;
+            }
+        } catch (error) {
+            console.error('Erreur lors du traitement des données:', error);
+        }
+    };
+    
+    dataChannel.onclose = () => {
+        console.log('Canal de données fermé');
+        showConnectionStatus('Connexion fermée', 'error');
+    };
+    
+    dataChannel.onerror = (error) => {
+        console.error('Erreur du canal de données:', error);
+        showConnectionStatus('Erreur de réception', 'error');
+    };
+}
+
+async function sendFilesCrossMachine() {
+    if (!dataChannel || dataChannel.readyState !== 'open') {
+        console.error('Canal de données non disponible');
+        return;
+    }
+    
+    // Envoyer les métadonnées des fichiers
+    const fileMetadata = {
+        type: 'metadata',
+        files: selectedFiles.map(file => ({
+            name: file.name,
+            size: file.size,
+            type: file.type
+        }))
+    };
+    
+    dataChannel.send(JSON.stringify(fileMetadata));
+    
+    // Envoyer chaque fichier par chunks
+    for (let i = 0; i < selectedFiles.length; i++) {
+        const file = selectedFiles[i];
+        const chunkSize = 16 * 1024; // 16KB par chunk pour WebRTC
+        let offset = 0;
+        
+        while (offset < file.size) {
+            const chunk = file.slice(offset, offset + chunkSize);
+            const arrayBuffer = await chunk.arrayBuffer();
+            
+            const chunkData = {
+                type: 'chunk',
+                fileIndex: i,
+                offset: offset,
+                data: Array.from(new Uint8Array(arrayBuffer))
+            };
+            
+            dataChannel.send(JSON.stringify(chunkData));
+            offset += chunkSize;
+            
+            // Petit délai pour éviter de surcharger
+            await new Promise(resolve => setTimeout(resolve, 5));
+        }
+    }
+    
+    // Signal de fin
+    dataChannel.send(JSON.stringify({ type: 'complete' }));
+    console.log('Tous les fichiers envoyés via cross-machine');
+}
+
+// Mode téléchargement cross-machine
+async function initCrossMachineDownloadMode(encodedOffer) {
+    console.log('Mode téléchargement cross-machine');
+    
+    // Changer le contenu de la page
+    document.querySelector('.header').innerHTML = `
+        <h1 class="title">Téléchargement Cross-Machine</h1>
+        <p class="subtitle">Connexion WebRTC en cours...</p>
+    `;
+    
+    // Masquer la zone de dépôt
+    dropZone.style.display = 'none';
+    
+    try {
+        // Décoder l'offre
+        const offerData = JSON.parse(atob(encodedOffer));
+        console.log('Offre reçue:', offerData);
+        
+        // Créer la connexion peer-to-peer
+        await createPeerConnection();
+        
+        // Configurer l'offre distante
+        await peerConnection.setRemoteDescription(offerData.offer);
+        
+        // Créer une réponse
+        const answer = await peerConnection.createAnswer();
+        await peerConnection.setLocalDescription(answer);
+        
+        // Encoder la réponse et la renvoyer via l'URL
+        const answerData = {
+            type: 'answer',
+            answer: answer,
+            roomId: offerData.roomId,
+            timestamp: Date.now()
+        };
+        
+        const encodedAnswer = btoa(JSON.stringify(answerData));
+        const responseUrl = `${window.location.origin}${window.location.pathname}?answer=${encodedAnswer}`;
+        
+        // Afficher l'URL de réponse pour l'expéditeur
+        showConnectionStatus('Connexion établie! En attente des fichiers...', 'success');
+        
+        console.log('Réponse WebRTC créée:', responseUrl);
+        
+        // Afficher l'URL de réponse pour que l'expéditeur puisse la copier
+        showResponseUrl(responseUrl);
+        
+    } catch (error) {
+        console.error('Erreur lors de l\'initialisation cross-machine:', error);
+        showConnectionStatus('Erreur de connexion cross-machine', 'error');
+    }
+}
+
+function showResponseUrl(responseUrl) {
+    const mainContent = document.querySelector('.main-content');
+    
+    mainContent.innerHTML = `
+        <div class="files-list">
+            <h3>Connexion Cross-Machine</h3>
+            <p style="color: #16bf78; margin-bottom: 1rem;">🌐 Réponse WebRTC générée</p>
+            <p style="color: rgba(255, 255, 255, 0.8); margin-bottom: 1rem;">
+                Copiez cette URL et ouvrez-la dans l'onglet de l'expéditeur pour établir la connexion :
+            </p>
+            <div class="link-container">
+                <input type="text" id="responseLink" value="${responseUrl}" readonly>
+                <button class="btn btn-secondary" onclick="copyResponseLink()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M16 4H18C19.1046 4 20 4.89543 20 6V18C20 19.1046 19.1046 20 18 20H6C4.89543 20 4 19.1046 4 18V6C4 4.89543 4.89543 4 6 4H8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <rect x="8" y="2" width="8" height="4" rx="1" ry="1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Copier
+                </button>
+            </div>
+            <p style="color: rgba(255, 193, 7, 0.8); font-size: 0.875rem; margin-top: 1rem;">
+                ⚠️ Cette URL doit être ouverte dans l'onglet de l'expéditeur pour établir la connexion WebRTC
+            </p>
+        </div>
+    `;
+}
+
+function copyResponseLink() {
+    const responseLink = document.getElementById('responseLink');
+    responseLink.select();
+    responseLink.setSelectionRange(0, 99999);
+    
+    try {
+        document.execCommand('copy');
+        showConnectionStatus('URL de réponse copiée!', 'success');
+    } catch (err) {
+        console.error('Erreur lors de la copie:', err);
+        showConnectionStatus('Erreur de copie', 'error');
+    }
+}
+
+// Gestion des réponses WebRTC
+function handleWebRTCAnswer(encodedAnswer) {
+    try {
+        const answerData = JSON.parse(atob(encodedAnswer));
+        console.log('Réponse reçue:', answerData);
+        
+        // Configurer la réponse distante
+        peerConnection.setRemoteDescription(answerData.answer).then(() => {
+            console.log('Réponse WebRTC configurée');
+            showConnectionStatus('Connexion WebRTC établie!', 'success');
+        }).catch(error => {
+            console.error('Erreur lors de la configuration de la réponse:', error);
+            showConnectionStatus('Erreur de configuration WebRTC', 'error');
+        });
+        
+    } catch (error) {
+        console.error('Erreur lors du traitement de la réponse:', error);
+        showConnectionStatus('Erreur de réponse WebRTC', 'error');
+    }
+}
+
+function showReceivedFilesCrossMachine(files) {
+    const mainContent = document.querySelector('.main-content');
+    
+    mainContent.innerHTML = `
+        <div class="files-list">
+            <h3>Fichiers en cours de réception (Cross-Machine)</h3>
+            <p style="color: #16bf78; margin-bottom: 1rem;">🌐 Connexion WebRTC établie</p>
+            <div class="files-container" id="receivedFilesContainer"></div>
+        </div>
+    `;
+    
+    const container = document.getElementById('receivedFilesContainer');
+    files.forEach((file, index) => {
+        const fileItem = document.createElement('div');
+        fileItem.className = 'file-item';
+        fileItem.innerHTML = `
+            <div class="file-info">
+                <div class="file-icon">${getFileExtension(file.name).toUpperCase()}</div>
+                <div class="file-details">
+                    <h4>${file.name}</h4>
+                    <p>${formatFileSize(file.size)}</p>
+                </div>
+            </div>
+            <div class="progress-bar" id="progress-${index}">
+                <div class="progress-fill" style="width: 0%"></div>
+            </div>
+        `;
+        container.appendChild(fileItem);
+    });
+}
+
+function updateProgressCrossMachine(fileIndex, received, total) {
+    const percentage = (received / total) * 100;
+    const progressFill = document.querySelector(`#progress-${fileIndex} .progress-fill`);
+    if (progressFill) {
+        progressFill.style.width = `${percentage}%`;
+    }
+}
+
+function prepareDownloadsCrossMachine(files, buffers) {
+    const mainContent = document.querySelector('.main-content');
+    
+    mainContent.innerHTML = `
+        <div class="files-list">
+            <h3>Fichiers reçus (Cross-Machine)</h3>
+            <p style="color: #16bf78; margin-bottom: 1rem;">✅ Transfert WebRTC terminé</p>
+            <div class="files-container" id="downloadFilesContainer"></div>
+            <button class="btn btn-primary" id="downloadAllBtn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M7 10L12 15L17 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 15V3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Télécharger tous les fichiers
+            </button>
+        </div>
+    `;
+    
+    const container = document.getElementById('downloadFilesContainer');
+    const downloadAllBtn = document.getElementById('downloadAllBtn');
+    
+    files.forEach((file, index) => {
+        const fileItem = createDownloadFileItem(file, index, buffers[index]);
+        container.appendChild(fileItem);
+    });
+    
+    downloadAllBtn.addEventListener('click', () => {
+        files.forEach((file, index) => {
+            downloadFile(file.name, buffers[index]);
+        });
+    });
 }
 
 function startLocalPeerDiscovery() {
