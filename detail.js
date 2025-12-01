@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     <a href="${mod.download}" class="btn download-btn" target="_blank" rel="noopener noreferrer">
                         Télécharger le mod
                     </a>
-                    <a href="http://127.0.0.1:5500/" class="btn btn-secondary">
+                    <a href="https://awit3n.github.io/" class="btn btn-secondary">
                         Retour à l'accueil
                     </a>
                 </div>
