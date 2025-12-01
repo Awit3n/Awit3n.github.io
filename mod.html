@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ModHub - Détails du mod</title>
+    <meta name="description"
+        content="Détails du mod sur ModHub. Téléchargez ce mod pour améliorer votre expérience de jeu.">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:title" content="ModHub - Détails du mod">
+    <meta property="og:description" content="Téléchargez ce mod pour améliorer votre expérience de jeu">
+    <meta property="og:type" content="website">
+
+    <!-- JSON-LD Schema.org -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ItemPage",
+      "name": "Page de détails du mod",
+      "description": "Page contenant les détails complets d'un mod de jeu vidéo",
+      "url": "https://modhub.example.com/mod.html"
+    }
+    </script>
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/x-icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏎️</text></svg>">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="main-header">
+        <div class="container">
+            <div class="logo">
+                <h1><a href="index.html" style="color: inherit; text-decoration: none;">🏎️ ModHub</a></h1>
+                <p class="tagline">Les meilleurs mods pour vos jeux de simulation</p>
+            </div>
+            <nav class="main-nav">
+                <a href="index.html">Accueil</a>
+                <a href="index.html#about">À propos</a>
+                <a href="index.html#contact">Contact</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Mod Details Section -->
+        <!-- Mod Details Section -->
+        <section id="modDetails">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Chargement des détails du mod...</p>
+            </div>
+        </section>
+
+        <!-- Error Message (hidden by default) -->
+        <section id="errorMessage" class="error-message" style="display: none;">
+            <h2>Mod non trouvé</h2>
+            <p>Le mod que vous recherchez n'existe pas ou a été supprimé.</p>
+            <a href="index.html" class="btn btn-primary">Retour à l'accueil</a>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h3>🏎️ ModHub</h3>
+                    <p>La référence des mods de simulation</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Liens utiles</h4>
+                    <a href="index.html">Accueil</a>
+                    <a href="index.html#about">À propos</a>
+                    <a href="index.html#contact">Contact</a>
+                </div>
+                <div class="footer-disclaimer">
+                    <h4>Informations importantes</h4>
+                    <p>Les mods sont la propriété de leurs créateurs respectifs. Les jeux mentionnés sont la propriété
+                        de leurs éditeurs respectifs.</p>
+                </div>
+            </div>
+            <div class="footer-copyright">
+                <p>&copy; 2023 ModHub. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="detail.js"></script>
+</body>
+
+</html>
