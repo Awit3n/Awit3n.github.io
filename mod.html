@@ -1,95 +1,368 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ModHub - Détails du mod</title>
-    <meta name="description"
-        content="Détails du mod sur ModHub. Téléchargez ce mod pour améliorer votre expérience de jeu.">
-
-    <!-- Open Graph / Facebook -->
-    <meta property="og:title" content="ModHub - Détails du mod">
-    <meta property="og:description" content="Téléchargez ce mod pour améliorer votre expérience de jeu">
-    <meta property="og:type" content="website">
-
-    <!-- JSON-LD Schema.org -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "ItemPage",
-      "name": "Page de détails du mod",
-      "description": "Page contenant les détails complets d'un mod de jeu vidéo",
-      "url": "https://modhub.example.com/mod.html"
-    }
-    </script>
-
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" type="image/x-icon"
-        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏎️</text></svg>">
+    <title>ModHub | Fiche Technique</title>
+    <meta name="description" content="Fiche technique détaillée du mod - analyse complète, performances, installation et comparatif">
+    <link rel="stylesheet" href="css/style.css">
 </head>
-
 <body>
-    <!-- Header -->
-    <header class="main-header">
-        <div class="container">
+    <header class="site-header">
+        <nav class="main-nav">
             <div class="logo">
-                <h1><a href="index.html" style="color: inherit; text-decoration: none;">🏎️ ModHub</a></h1>
-                <p class="tagline">Les meilleurs mods pour vos jeux de simulation</p>
+                <a href="index.html">
+                    <span>ModHub</span>
+                </a>
             </div>
-            <nav class="main-nav">
-                <a href="index.html">Accueil</a>
-                <a href="index.html#about">À propos</a>
-                <a href="index.html#contact">Contact</a>
-            </nav>
-        </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="mods.html">Mods</a></li>
+                <li><a href="guides.html">Guides</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </nav>
     </header>
 
-    <main class="container">
-        <!-- Mod Details Section -->
-        <!-- Mod Details Section -->
-        <section id="modDetails">
-            <div class="loading">
-                <div class="spinner"></div>
-                <p>Chargement des détails du mod...</p>
-            </div>
-        </section>
+    <main class="mod-page">
+        <nav class="breadcrumb" id="breadcrumb">
+            <a href="index.html">Accueil</a> > <span>Chargement...</span>
+        </nav>
 
-        <!-- Error Message (hidden by default) -->
-        <section id="errorMessage" class="error-message" style="display: none;">
-            <h2>Mod non trouvé</h2>
-            <p>Le mod que vous recherchez n'existe pas ou a été supprimé.</p>
-            <a href="index.html" class="btn btn-primary">Retour à l'accueil</a>
-        </section>
+        <article class="mod-details">
+            <header class="mod-header-page">
+                <h1 id="mod-title">Chargement...</h1>
+                <p class="mod-author" id="mod-author"></p>
+                
+                <div class="mod-meta-page">
+                    <div class="mod-rating-page" id="mod-rating"></div>
+                    <div class="mod-version" id="mod-version"></div>
+                    <div class="mod-game" id="mod-game"></div>
+                    <div class="mod-category" id="mod-category"></div>
+                </div>
+                
+                <div class="mod-badges" id="mod-badges"></div>
+            </header>
+
+            <section class="mod-section">
+                <h2>Description Technique</h2>
+                <div class="mod-description-content" id="mod-description">
+                    <p>Chargement de la description...</p>
+                </div>
+            </section>
+
+            <div class="mod-grid">
+                <section class="mod-section">
+                    <h2>Historique des Versions</h2>
+                    <ul class="changelog-list" id="changelog-list">
+                        <li>Chargement...</li>
+                    </ul>
+                </section>
+
+                <section class="mod-section">
+                    <h2>Spécifications Techniques</h2>
+                    <table class="specs-table" id="specs-table">
+                        <thead>
+                            <tr>
+                                <th>Paramètre</th>
+                                <th>Valeur</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Rempli dynamiquement -->
+                        </tbody>
+                    </table>
+                </section>
+            </div>
+
+            <div class="mod-grid">
+                <section class="mod-section">
+                    <h2>Compatibilité</h2>
+                    <ul class="compatibility-list" id="compatibility-list">
+                        <!-- Rempli dynamiquement -->
+                    </ul>
+                </section>
+
+                <section class="mod-section">
+                    <h2>Performances</h2>
+                    <ul class="performance-list" id="performance-list">
+                        <!-- Rempli dynamiquement -->
+                    </ul>
+                </section>
+            </div>
+
+            <section class="mod-section">
+                <h2>Analyse Comparative</h2>
+                <p class="section-intro">Comparaison technique avec des mods similaires :</p>
+                <div class="comparison-grid" id="comparison-grid">
+                    <!-- Rempli dynamiquement -->
+                </div>
+            </section>
+
+            <div class="mod-grid">
+                <section class="mod-section">
+                    <h2>Points Forts</h2>
+                    <ul class="strengths-list" id="strengths-list">
+                        <!-- Rempli dynamiquement -->
+                    </ul>
+                </section>
+
+                <section class="mod-section">
+                    <h2>Limites & Contraintes</h2>
+                    <ul class="limits-list" id="limits-list">
+                        <!-- Rempli dynamiquement -->
+                    </ul>
+                </section>
+            </div>
+
+            <section class="mod-section">
+                <h2>Tutoriel d'Installation</h2>
+                <div class="tutorial-steps" id="tutorial-steps">
+                    <!-- Rempli dynamiquement -->
+                </div>
+            </section>
+
+            <section class="mod-section">
+                <h2>Galerie & Médias</h2>
+                <div class="mod-gallery" id="mod-gallery">
+                    <!-- Rempli dynamiquement -->
+                </div>
+                
+                <div class="video-container" id="video-container">
+                    <!-- Rempli dynamiquement -->
+                </div>
+            </section>
+
+            <section class="mod-section">
+                <h2>Configuration Recommandée</h2>
+                <div class="requirements-grid">
+                    <div class="requirement-card">
+                        <h3>Minimum</h3>
+                        <p id="requirements-min">Chargement...</p>
+                    </div>
+                    <div class="requirement-card">
+                        <h3>Recommandé</h3>
+                        <p id="requirements-recommended">Chargement...</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="comments-section">
+                <h2>Commentaires <span id="comments-count">(0)</span></h2>
+                
+                <div class="comments-controls">
+                    <select id="comments-sort" class="filter-select">
+                        <option value="newest">Plus récents</option>
+                        <option value="oldest">Plus anciens</option>
+                        <option value="rating">Meilleures notes</option>
+                    </select>
+                </div>
+
+                <div class="comment-form">
+                    <h3>Ajouter un commentaire</h3>
+                    <form id="comment-form">
+                        <div class="form-group">
+                            <label for="comment-author">Nom / Pseudonyme *</label>
+                            <input type="text" id="comment-author" name="author" required 
+                                   placeholder="Votre nom" maxlength="50">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="comment-rating">Note (1-5) *</label>
+                            <select id="comment-rating" name="rating" required>
+                                <option value="">Sélectionnez une note</option>
+                                <option value="5">5 - Excellent</option>
+                                <option value="4">4 - Très bon</option>
+                                <option value="3">3 - Bon</option>
+                                <option value="2">2 - Moyen</option>
+                                <option value="1">1 - Décevant</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="comment-content">Commentaire *</label>
+                            <textarea id="comment-content" name="content" rows="4" required 
+                                      placeholder="Partagez votre expérience avec ce mod..."
+                                      maxlength="1000"></textarea>
+                            <small>Minimum 10 caractères, maximum 1000</small>
+                        </div>
+                        
+                        <input type="hidden" id="comment-reply-to" name="reply_to" value="">
+                        <div id="reply-to-indicator" style="display: none; margin-bottom: 1rem; padding: 0.5rem; background: var(--surface-light); border-radius: var(--border-radius);"></div>
+                        
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">Publier le commentaire</button>
+                        </div>
+                        
+                        <div id="comment-form-status" class="form-status" style="display: none;"></div>
+                    </form>
+                </div>
+
+                <div class="comments-list" id="comments-list">
+                    <!-- Commentaires chargés dynamiquement -->
+                </div>
+            </section>
+        </article>
     </main>
 
-    <!-- Footer -->
-    <footer class="main-footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-logo">
-                    <h3>🏎️ ModHub</h3>
-                    <p>La référence des mods de simulation</p>
-                </div>
-                <div class="footer-links">
-                    <h4>Liens utiles</h4>
-                    <a href="index.html">Accueil</a>
-                    <a href="index.html#about">À propos</a>
-                    <a href="index.html#contact">Contact</a>
-                </div>
-                <div class="footer-disclaimer">
-                    <h4>Informations importantes</h4>
-                    <p>Les mods sont la propriété de leurs créateurs respectifs. Les jeux mentionnés sont la propriété
-                        de leurs éditeurs respectifs.</p>
-                </div>
+    <footer class="site-footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>ModHub</h4>
+                <p>Fiches techniques détaillées</p>
             </div>
-            <div class="footer-copyright">
-                <p>&copy; 2023 ModHub. Tous droits réservés.</p>
+            <div class="footer-section">
+                <h4>Précision</h4>
+                <p>Toutes nos analyses sont basées sur des tests techniques approfondis</p>
             </div>
+            <div class="footer-section">
+                <h4>Transparence</h4>
+                <p>Nous déclarons tout partenariat ou relation avec les créateurs de mods</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 ModHub. Analyse technique indépendante. Les mods présentés appartiennent à leurs créateurs respectifs.</p>
         </div>
     </footer>
 
-    <script src="detail.js"></script>
-</body>
+    <script src="js/app.js"></script>
+    <script src="js/comments.js"></script>
+    
+    <style>
+        .mod-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
 
+        .requirements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+
+        .requirement-card {
+            background-color: var(--surface-light);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+        }
+
+        .requirement-card h3 {
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+            font-size: 1.125rem;
+        }
+
+        .mod-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .mod-gallery img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+        }
+
+        .video-container {
+            margin-top: 2rem;
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 */
+            height: 0;
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: var(--border-radius);
+            border: none;
+        }
+
+        .comments-controls {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 2rem;
+        }
+
+        .verified-badge {
+            background-color: var(--success-color);
+            color: white;
+            padding: 0.125rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            margin-left: 0.5rem;
+        }
+
+        .comment-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .btn-reply,
+        .btn-report {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 0.875rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: var(--border-radius);
+        }
+
+        .btn-reply:hover {
+            color: var(--primary-color);
+            background-color: rgba(37, 99, 235, 0.1);
+        }
+
+        .btn-report:hover {
+            color: var(--danger-color);
+            background-color: rgba(239, 68, 68, 0.1);
+        }
+
+        .comment-reply-to {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+            padding-left: 1rem;
+            border-left: 2px solid var(--primary-color);
+        }
+
+        .no-comments {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-secondary);
+            background-color: var(--surface-color);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+        }
+
+        @media (max-width: 768px) {
+            .mod-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .requirements-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .comments-controls {
+                justify-content: flex-start;
+            }
+        }
+    </style>
+</body>
 </html>

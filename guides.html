@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guides Techniques | ModHub</title>
+    <meta name="description"
+        content="Guides techniques détaillés pour optimiser BeamNG.drive et Assetto Corsa. Setup professionnel, optimisation performance et création de mods.">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <header class="site-header">
+        <nav class="main-nav">
+            <div class="logo">
+                <a href="index.html">
+                    <span>ModHub</span>
+                </a>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="mods.html">Mods</a></li>
+                <li><a href="guides.html" class="active">Guides</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        <section class="hero">
+            <h1>Guides Techniques</h1>
+            <p class="subtitle">Des tutoriels détaillés pour optimiser vos simulateurs et créer des mods de qualité</p>
+        </section>
+
+        <div id="beamng-optimization"><br><br><br></div>
+        <article class="guide-article">
+            <h2>Guide Complet d'Optimisation BeamNG.drive</h2>
+
+            <div class="guide-meta">
+                <span>Mis à jour: Mars 2024</span>
+                <span>Niveau: Intermédiaire</span>
+                <span>Temps de lecture: 15 minutes</span>
+            </div>
+
+            <section class="guide-section">
+                <h3>Comprendre l'Architecture BeamNG</h3>
+                <p>BeamNG.drive utilise un moteur de physique propriétaire basé sur les véhicules à déformation
+                    continue. L'optimisation nécessite de comprendre comment le jeu répartit les ressources CPU entre :
+                </p>
+                <ul>
+                    <li>La simulation des nœuds de véhicules (jusqu'à 2000 par véhicule)</li>
+                    <li>Les collisions et déformations en temps réel</li>
+                    <li>Le système de particules (poussière, fumée, débris)</li>
+                    <li>La gestion du trafic et de l'IA</li>
+                </ul>
+            </section>
+
+            <section class="guide-section">
+                <h3>Optimisation CPU - Priorité Physique</h3>
+                <p>La physique représente 60-80% de la charge CPU. Nos recommandations :</p>
+
+                <div class="guide-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Paramètre</th>
+                                <th>Valeur Recommandée</th>
+                                <th>Impact Performance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Nœuds de véhicule</td>
+                                <td>Réduire à 80%</td>
+                                <td>+25% FPS sur CPU limité</td>
+                            </tr>
+                            <tr>
+                                <td>Qualité collisions</td>
+                                <td>Moyenne</td>
+                                <td>+15% FPS, perte mineure précision</td>
+                            </tr>
+                            <tr>
+                                <td>Véhicules simultanés</td>
+                                <td>4-6 maximum</td>
+                                <td>+40% FPS vs 12 véhicules</td>
+                            </tr>
+                            <tr>
+                                <td>Trafic IA</td>
+                                <td>Désactivé en course</td>
+                                <td>+20% FPS</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="guide-section">
+                <h3>Optimisation GPU - Équilibre Qualité/Performance</h3>
+                <p>Pour les cartes RTX 3060 et équivalentes :</p>
+
+                <div class="settings-grid">
+                    <div class="setting-card">
+                        <h4>Textures</h4>
+                        <p><strong>Recommandé:</strong> Haute (4GB VRAM)<br>
+                            <strong>Optimisation:</strong> Moyenne (2GB VRAM)<br>
+                            <strong>Gain:</strong> 10% FPS
+                        </p>
+                    </div>
+                    <div class="setting-card">
+                        <h4>Ombres</h4>
+                        <p><strong>Recommandé:</strong> Distance 800m<br>
+                            <strong>Optimisation:</strong> Distance 400m<br>
+                            <strong>Gain:</strong> 15% FPS
+                        </p>
+                    </div>
+                    <div class="setting-card">
+                        <h4>Réflexions</h4>
+                        <p><strong>Recommandé:</strong> Qualité Moyenne<br>
+                            <strong>Optimisation:</strong> Faible + DSR 1.5x<br>
+                            <strong>Gain:</strong> 20% FPS, meilleure netteté
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="guide-section">
+                <h3>Configuration Avancée .cfg</h3>
+                <p>Éditez le fichier <code>beamng.drive.cfg</code> dans Documents :</p>
+
+                <pre><code>// Optimisation CPU
+physicsLODFactor = 0.8
+maxPhysicsLOD = 2
+particleLimit = 5000
+
+// Optimisation GPU
+textureStreamingBudget = 2048
+shadowCascadeCount = 3
+reflectionQuality = 1
+
+// Mémoire
+videoMemoryUsage = 0.8
+systemMemoryUsage = 0.75</code></pre>
+
+                <p class="note">⚠ Attention : Sauvegardez le fichier original avant modification</p>
+            </section>
+
+            <section class="guide-section">
+                <h3>Benchmark et Mesures</h3>
+                <p>Méthodologie de test recommandée :</p>
+                <ol>
+                    <li>Créer une scène de référence (5 véhicules sur Utah)</li>
+                    <li>Mesurer les FPS minimums sur 5 minutes</li>
+                    <li>Monitorer l'utilisation CPU/GPU avec MSI Afterburner</li>
+                    <li>Noter le 1% low FPS (indicateur de fluidité)</li>
+                </ol>
+
+                <p>Résultats types sur RTX 3060 + i5-12400F :</p>
+                <ul>
+                    <li>1080p Ultra : 45-60 FPS (CPU bottleneck)</li>
+                    <li>1080p Optimisé : 75-90 FPS (équilibre)</li>
+                    <li>1080p Performance : 100-144 FPS (pour compétition)</li>
+                </ul>
+            </section>
+        </article>
+        <div id="assetto-setup"><br><br><br></div>
+        <article class="guide-article">
+            <h2>Setup Professionnel Assetto Corsa</h2>
+
+            <div class="guide-meta">
+                <span>Mis à jour: Mars 2024</span>
+                <span>Niveau: Avancé</span>
+                <span>Temps de lecture: 20 minutes</span>
+            </div>
+
+            <section class="guide-section">
+                <h3>Configuration FFB (Force Feedback)</h3>
+                <p>Le FFB correctement configuré est essentiel pour la précision. Notre méthode :</p>
+
+                <h4>Étape 1 : Calibration de base</h4>
+                <ul>
+                    <li>Gain : 65-75% (éviter la saturation)</li>
+                    <li>Filtre : 3-8% (réduire les vibrations parasites)</li>
+                    <li>Min force : 0-2% (précision basse vitesse)</li>
+                    <li>Damping : 5-15% (stabilité haute vitesse)</li>
+                </ul>
+
+                <h4>Étape 2 : Ajustements par voiture</h4>
+                <p>Utiliser LUT Generator pour chaque type de direction :</p>
+                <ul>
+                    <li>Direction assistée : Courbe douce (0.8-1.0)</li>
+                    <li>Direction mécanique : Courbe linéaire (1.0)</li>
+                    <li>Formule 1 : Courbe progressive (0.6-1.2)</li>
+                </ul>
+            </section>
+
+            <section class="guide-section">
+                <h3>Réglages Pneus et Suspensions</h3>
+
+                <div class="guide-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Paramètre</th>
+                                <th>Circuit Sec</th>
+                                <th>Circuit Humide</th>
+                                <th>Drift</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Pression pneus</td>
+                                <td>26-28 PSI chaud</td>
+                                <td>24-26 PSI chaud</td>
+                                <td>28-30 PSI</td>
+                            </tr>
+                            <tr>
+                                <td>Camber avant</td>
+                                <td>-3.0° à -3.5°</td>
+                                <td>-2.5° à -3.0°</td>
+                                <td>-4.0° à -5.0°</td>
+                            </tr>
+                            <tr>
+                                <td>Toe avant</td>
+                                <td>0.0° à 0.1° out</td>
+                                <td>0.1° à 0.2° in</td>
+                                <td>0.5° à 1.0° out</td>
+                            </tr>
+                            <tr>
+                                <td>Raideur ARB</td>
+                                <td>Moyen-Fort</td>
+                                <td>Moyen</td>
+                                <td>Moyen-Faible</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="guide-section">
+                <h3>Configuration CSP et Sol</h3>
+                <p>Pour une expérience météo dynamique :</p>
+
+                <pre><code>// CSP Settings.ini
+[WEATHER]
+Dynamic = 1
+UpdateRate = 60
+TransitionTime = 1800
+
+[LIGHTING]
+Exposure = 0.8
+Saturation = 1.1
+BlueLight = 0.9
+
+[GRAPHICS]
+RainDrops = 2
+WetSurfaces = 3
+Puddles = 2</code></pre>
+
+                <p>Optimisation VRAM importante : activer le texture streaming dans CSP</p>
+            </section>
+        </article>
+        <div id="mod-creation"><br><br><br></div>
+
+        <article class="guide-article">
+            <h2>Pipeline de Création de Mods</h2>
+
+            <div class="guide-meta">
+                <span>Mis à jour: Février 2024</span>
+                <span>Niveau: Expert</span>
+                <span>Temps de lecture: 30 minutes</span>
+            </div>
+
+            <section class="guide-section">
+                <h3>Phase 1 : Pré-production</h3>
+                <p><strong>Choix du projet :</strong> Sélectionner un véhicule avec documentation technique accessible.
+                    Éviter les modèles protégés par copyright strict.</p>
+
+                <p><strong>Collecte de données :</strong></p>
+                <ul>
+                    <li>Dimensions exactes (wheelbase, track width)</li>
+                    <li>Photos sous tous angles (minimum 200 photos)</li>
+                    <li>Spécifications techniques officielles</li>
+                    <li>Enregistrements sonores si possible</li>
+                </ul>
+            </section>
+
+            <section class="guide-section">
+                <h3>Phase 2 : Modélisation 3D</h3>
+                <p>Workflow recommandé avec Blender 3.6+ :</p>
+
+                <ol>
+                    <li>Créer le modèle basse poly (LOD0 : 50-80k tris)</li>
+                    <li>Ajouter les détails par normal mapping</li>
+                    <li>Préparer les LODs (LOD1 : 20k, LOD2 : 5k, LOD3 : 1k)</li>
+                    <li>UV mapping optimisé pour 4K textures</li>
+                </ol>
+
+                <p><strong>Points critiques :</strong></p>
+                <ul>
+                    <li>Respecter l'échelle 1:1</li>
+                    <li>Orientation correcte (Z vers le haut)</li>
+                    <li>Topologie adaptée à la déformation (pour BeamNG)</li>
+                </ul>
+            </section>
+
+            <section class="guide-section">
+                <h3>Phase 3 : Textures et Matériaux</h3>
+                <p>Utiliser Substance Painter pour :</p>
+
+                <div class="textures-grid">
+                    <div class="texture-card">
+                        <h4>Albedo/Diffuse</h4>
+                        <p>4096x4096, compression BC7<br>
+                            Inclure détails de surface</p>
+                    </div>
+                    <div class="texture-card">
+                        <h4>Normal Map</h4>
+                        <p>4096x4096, compression BC5<br>
+                            Détails jusqu'à 2mm</p>
+                    </div>
+                    <div class="texture-card">
+                        <h4>Roughness/Metallic</h4>
+                        <p>4096x4096, grayscale<br>
+                            Basé sur matériaux réels</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="guide-section">
+                <h3>Phase 4 : Implémentation Physique</h3>
+                <p><strong>Pour BeamNG.drive :</strong></p>
+                <pre><code>// Structure jbeam de base
+"beamng": {
+    "physics": {
+        "nodes": [...],
+        "beams": [...],
+        "triangles": [...]
+    },
+    "engine": {
+        "torqueCurve": [...],
+        "redline": 6500
+    }
+}</code></pre>
+
+                <p><strong>Pour Assetto Corsa :</strong></p>
+                <pre><code>// Fichier data.acd
+[GRAPHICS]
+[...]
+
+[PHYSICS]
+mass = 1450
+inertia = 2.5, 1.2, 1.7</code></pre>
+            </section>
+
+            <section class="guide-section">
+                <h3>Phase 5 : Tests et Optimisation</h3>
+                <p>Checklist de validation :</p>
+
+                <ul>
+                    <li>✅ Performance : FPS impact < 15% vs véhicule standard</li>
+                    <li>✅ Stabilité : 0 crash sur 100 heures de test</li>
+                    <li>✅ Physique : Comportement réaliste dans toutes situations</li>
+                    <li>✅ Compatibilité : Fonctionne sur configurations min/rec</li>
+                    <li>✅ Documentation : Tutoriel d'installation complet</li>
+                </ul>
+
+                <p>Durée estimée : 200-400 heures pour un mod de qualité professionnelle</p>
+            </section>
+        </article>
+
+        <div id="troubleshooting"><br><br><br></div>
+        <article class="guide-article">
+            <h2>Guide de Dépannage Complet</h2>
+
+            <section class="guide-section">
+                <h3>Problèmes Courants BeamNG.drive</h3>
+
+                <div class="problem-solution">
+                    <h4>Crash au chargement</h4>
+                    <p><strong>Causes :</strong> Mod incompatible, mémoire insuffisante, fichiers corrompus</p>
+                    <p><strong>Solutions :</strong></p>
+                    <ol>
+                        <li>Désactiver les mods récemment installés</li>
+                        <li>Vérifier l'intégrité des fichiers Steam</li>
+                        <li>Augmenter le fichier d'échange Windows</li>
+                        <li>Mettre à jour les drivers GPU</li>
+                    </ol>
+                </div>
+
+                <div class="problem-solution">
+                    <h4>Chutes de FPS soudaines</h4>
+                    <p><strong>Causes :</strong> Fuite mémoire, chauffage CPU, background processes</p>
+                    <p><strong>Solutions :</strong></p>
+                    <ol>
+                        <li>Limiter les véhicules à 4 maximum</li>
+                        <li>Désactiver le trafic IA</li>
+                        <li>Réduire la distance d'affichage</li>
+                        <li>Utiliser MSI Afterburner pour monitoring</li>
+                    </ol>
+                </div>
+            </section>
+
+            <section class="guide-section">
+                <h3>Problèmes Courants Assetto Corsa</h3>
+
+                <div class="problem-solution">
+                    <h4>FFB trop faible ou trop fort</h4>
+                    <p><strong>Solutions :</strong></p>
+                    <ol>
+                        <li>Calibrer la volante dans le panneau de contrôle constructeur</li>
+                        <li>Utiliser LUT Generator pour courbe personnalisée</li>
+                        <li>Ajuster le gain dans Content Manager</li>
+                        <li>Vérifier les réglages par voiture</li>
+                    </ol>
+                </div>
+
+                <div class="problem-solution">
+                    <h4>Grille de départ vide en ligne</h4>
+                    <p><strong>Causes :</strong> Mods manquants, versions différentes, firewall</p>
+                    <p><strong>Solutions :</strong></p>
+                    <ol>
+                        <li>Vérifier la liste des mods requis</li>
+                        <li>S'assurer d'avoir les mêmes versions</li>
+                        <li>Autoriser AC dans le firewall</li>
+                        <li>Utiliser Content Manager pour vérification automatique</li>
+                    </ol>
+                </div>
+            </section>
+        </article>
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>ModHub</h4>
+                <p>Guides techniques par des passionnés pour des passionnés</p>
+            </div>
+            <div class="footer-section">
+                <h4>Navigation</h4>
+                <ul>
+                    <li><a href="index.html">Accueil</a></li>
+                    <li><a href="#beamng-optimization">Optimisation BeamNG</a></li>
+                    <li><a href="#assetto-setup">Setup Assetto</a></li>
+                    <li><a href="#mod-creation">Création mods</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Support Technique</h4>
+                <ul>
+                    <li><a href="contact.html">Formulaire de contact</a></li>
+                    <li><a href="privacy-policy.html">Confidentialité</a></li>
+                    <li><a href="terms.html">Conditions</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 ModHub. Guides rédigés par notre équipe technique. Reproduction interdite sans autorisation.
+            </p>
+        </div>
+    </footer>
+
+    <script src="js/app.js"></script>
+</body>
+
+</html>

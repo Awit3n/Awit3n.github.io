@@ -1,0 +1,869 @@
+{
+  "mods": [
+    {
+      "id": "beamng-turbo-sedan",
+      "title": "Sedan Turbo Edition 2024 - BeamNG.drive",
+      "author": "PhysicsLab Modding",
+      "version": "2.1.4",
+      "game": "beamng",
+      "category": "car",
+      "type": "realistic",
+      "releaseDate": "2024-01-15",
+      "lastUpdated": "2024-03-10",
+      "rating": 4.7,
+      "downloads": 12450,
+      "badges": [
+        "tested",
+        "stable",
+        "optimized",
+        "recommended"
+      ],
+      "description": "Modification complète du Sedan de base avec système turbo réaliste, suspension révisée et modèles de dégâts avancés.",
+      "longDescription": "<p>Ce mod transforme le Sedan standard de BeamNG.drive en une version haute performance équipée d'un système turbo réaliste. La physique a été entièrement retravaillée pour offrir une expérience de conduite authentique avec des caractéristiques techniques précises.</p><p>Le moteur 2.0L turbo développe désormais 320 chevaux avec une courbe de puissance linéaire. La transmission bénéficie de rapports plus courts et d'un différentiel à glissement limité amélioré. Les suspensions ont été recalibrées avec des amortisseurs ajustables et des barres anti-roulis renforcées.</p><p>Le système de dégâts inclut des déformations spécifiques aux composants turbocompressés et une modélisation réaliste de la surchauffe en cas de sollicitation excessive.</p>",
+      "changelog": [
+        {
+          "version": "2.1.4",
+          "date": "2024-03-10",
+          "description": "Correction du bug de surchauffe à haut régime, optimisation des textures LOD"
+        },
+        {
+          "version": "2.1.3",
+          "date": "2024-02-28",
+          "description": "Amélioration des réglages de suspension, ajout d'effets sonores turbo"
+        },
+        {
+          "version": "2.1.0",
+          "date": "2024-01-15",
+          "description": "Version majeure : système turbo complet, nouveaux modèles de dégâts"
+        }
+      ],
+      "specifications": [
+        {
+          "name": "Moteur",
+          "value": "2.0L Turbo 4 cylindres",
+          "notes": "Intercooler intégré, wastegate électronique"
+        },
+        {
+          "name": "Puissance",
+          "value": "320 ch @ 6500 tr/min",
+          "notes": "Couple: 420 Nm de 2500 à 5500 tr/min"
+        },
+        {
+          "name": "Transmission",
+          "value": "6 vitesses manuelle",
+          "notes": "Différentiel à glissement limité 30%"
+        },
+        {
+          "name": "Poids",
+          "value": "1450 kg",
+          "notes": "Distribution: 58/42 avant/arrière"
+        },
+        {
+          "name": "Suspension",
+          "value": "Double triangulation",
+          "notes": "Amortisseurs réglables sur 3 positions"
+        },
+        {
+          "name": "Freins",
+          "value": "Disques ventilés 345mm",
+          "notes": "Étriers 4 pistons avant, 2 pistons arrière"
+        }
+      ],
+      "compatibility": [
+        "BeamNG.drive 0.30 ou supérieur",
+        "Nécessite DLC Vehicle Terrain Pack (optionnel)",
+        "Compatible avec les mods de police",
+        "Non compatible avec les mods de physique alternatifs"
+      ],
+      "performance": {
+        "fpsImpact": "3-5% en conditions normales",
+        "stability": "Excellent (98% crash-free)",
+        "memoryUsage": "+120MB VRAM",
+        "loadingTime": "+2 secondes",
+        "physicsLoad": "Modéré (CPU +15%)"
+      },
+      "comparison": [
+        {
+          "name": "Sedan Sport Standard",
+          "strengths": "Stabilité, consommation, prix",
+          "weaknesses": "Performances limitées, sonorités basiques"
+        },
+        {
+          "name": "Sedan V8 Mod (compétiteur)",
+          "strengths": "Puissance brute, son V8",
+          "weaknesses": "Consommation élevée, moins maniable"
+        },
+        {
+          "name": "Sedan Électrique Mod",
+          "strengths": "Accélération, silence",
+          "weaknesses": "Autonomie virtuelle, pas de sensation turbo"
+        }
+      ],
+      "strengths": [
+        "Système turbo réaliste avec lag mesurable",
+        "Courbe de puissance progressive et crédible",
+        "Suspension bien calibrée pour route et circuit",
+        "Effets sonores de qualité professionnelle",
+        "Dégâts spécifiques aux composants turbo"
+      ],
+      "limits": [
+        "Consommation de carburant augmentée de 25%",
+        "Surchauffe possible en circuit prolongé",
+        "Réglages suspension avancés nécessitent apprentissage",
+        "Incompatible avec certains mods de moteur alternatifs"
+      ],
+      "tutorial": [
+        {
+          "title": "Téléchargement et extraction",
+          "description": "Téléchargez l'archive .zip et extrayez son contenu dans le dossier 'mods' de BeamNG.drive (Documents/BeamNG.drive/mods).",
+          "warning": "Assurez-vous de ne pas créer de sous-dossier supplémentaire"
+        },
+        {
+          "title": "Activation dans le jeu",
+          "description": "Lancez BeamNG.drive, allez dans Options > Mods et activez 'Sedan Turbo Edition'. Redémarrez le jeu.",
+          "warning": "Redémarrage obligatoire après activation"
+        },
+        {
+          "title": "Configuration des contrôles",
+          "description": "Dans les options de contrôle, assignez une touche pour le contrôle du wastegate (recommandé: touche numérique 7).",
+          "warning": ""
+        },
+        {
+          "title": "Premier démarrage",
+          "description": "Sélectionnez le véhicule dans le menu 'Véhicules' sous 'Sedan > Turbo Edition'. Laissez le moteur chauffer 30 secondes avant sollicitation.",
+          "warning": "Évitez les régimes élevés à froid"
+        }
+      ],
+      "images": [
+        "https://documentation.beamng.com/game/124b0830be3c0b51099f247bd922874c4e57beec.jpg",
+        "images/placeholder-mod.jpg",
+        "images/placeholder-mod.jpg"
+      ],
+      "video": "https://www.youtube.com/embed/example",
+      "fileSize": "245 MB",
+      "requirements": {
+        "min": "Intel i5, 8GB RAM, GTX 1060",
+        "recommended": "Intel i7, 16GB RAM, RTX 3060"
+      }
+    },
+    {
+      "id": "assetto-nordschleife-2024",
+      "title": "Nürburgring Nordschleife 2024 - Assetto Corsa",
+      "author": "TrackArt Collective",
+      "version": "1.3.2",
+      "game": "assetto",
+      "category": "track",
+      "type": "realistic",
+      "releaseDate": "2024-02-20",
+      "lastUpdated": "2024-03-15",
+      "rating": 4.9,
+      "downloads": 8920,
+      "badges": [
+        "tested",
+        "stable",
+        "optimized"
+      ],
+      "description": "Recréation laser-scannée du Nürburgring Nordschleife avec mise à jour 2024 des revêtements et signalisation.",
+      "longDescription": "<p>Ce mod représente la version la plus précise à ce jour du célèbre Nordschleife, réalisée à partir de données laser-scan haute résolution collectées en 2023. Le circuit inclut toutes les modifications de revêtement réalisées en 2024 ainsi que la signalisation actuelle.</p><p>La physique de la piste a été méticuleusement calibrée avec des échantillons de revêtement réels, offrant des variations de grip réalistes entre les différents types d'asphalte. Le mod inclut 8 conditions météorologiques différentes avec des transitions dynamiques.</p><p>L'optimisation graphique permet de maintenir des performances fluides même sur configurations modestes, avec un système LOD intelligent et des textures streamées.</p>",
+      "changelog": [
+        {
+          "version": "1.3.2",
+          "date": "2024-03-15",
+          "description": "Correction des bordures au virage 5, optimisation des textures"
+        },
+        {
+          "version": "1.3.0",
+          "date": "2024-03-01",
+          "description": "Ajout des conditions météorologiques dynamiques"
+        }
+      ],
+      "specifications": [
+        {
+          "name": "Longueur circuit",
+          "value": "20.832 km",
+          "notes": "Précision: ±5cm"
+        },
+        {
+          "name": "Dénivelé",
+          "value": "300 m",
+          "notes": "Points culminants précisément modélisés"
+        },
+        {
+          "name": "Surfaces",
+          "value": "8 types d'asphalte",
+          "notes": "Coefficients de friction mesurés"
+        },
+        {
+          "name": "Points d'appel",
+          "value": "174",
+          "notes": "Inclut tous les drapeaux officiels"
+        },
+        {
+          "name": "Résolution textures",
+          "value": "4K/2K",
+          "notes": "Streaming dynamique"
+        },
+        {
+          "name": "Objets 3D",
+          "value": "45.000",
+          "notes": "LOD optimisé"
+        }
+      ],
+      "compatibility": [
+        "Assetto Corsa 1.16 ou supérieur",
+        "Content Manager recommandé",
+        "CSP 0.1.80 ou supérieur",
+        "Sol 2.2.9 pour météo complète"
+      ],
+      "performance": {
+        "fpsImpact": "8-12% vs circuit standard",
+        "stability": "Exceptionnelle (99.9% crash-free)",
+        "memoryUsage": "+350MB VRAM",
+        "loadingTime": "+8 secondes",
+        "physicsLoad": "Faible (CPU +5%)"
+      },
+      "comparison": [
+        {
+          "name": "Nordschleife Original Kunos",
+          "strengths": "Optimisation, stabilité",
+          "weaknesses": "Détail limité, physique basique"
+        },
+        {
+          "name": "Nordschleife Tourist (mod populaire)",
+          "strengths": "Ambiance, objets décoratifs",
+          "weaknesses": "Performance, précision limitée"
+        }
+      ],
+      "strengths": [
+        "Précision laser-scan exceptionnelle",
+        "Revêtements 2024 actualisés",
+        "8 conditions météo avec transitions",
+        "Optimisation pour VR",
+        "Signalisation officielle incluse"
+      ],
+      "limits": [
+        "Taille fichier importante (2.1GB)",
+        "Nécessite CSP pour fonctionnalités complètes",
+        "Chargement plus long que la version standard"
+      ],
+      "tutorial": [
+        {
+          "title": "Installation via Content Manager",
+          "description": "Dans Content Manager, allez dans Content > Tracks > Install et sélectionnez le fichier .zip du mod.",
+          "warning": "Content Manager est fortement recommandé"
+        },
+        {
+          "title": "Configuration CSP",
+          "description": "Activez les extensions de piste dans CSP Settings > Track.",
+          "warning": ""
+        },
+        {
+          "title": "Réglages graphiques",
+          "description": "Ajustez la distance d'affichage à 80% minimum pour une expérience optimale.",
+          "warning": "Réduction possible en cas de baisse de FPS"
+        },
+        {
+          "title": "Première session",
+          "description": "Commencez par une session sèche en journée pour vous familiariser avec le nouveau revêtement.",
+          "warning": "Le grip évolue avec la température de la piste"
+        }
+      ],
+      "images": [
+        "https://www.gtplanet.net/wp-content/uploads/2023/07/image-1-2.jpg",
+        "images/placeholder-mod.jpg"
+      ],
+      "video": "https://www.youtube.com/embed/example2",
+      "fileSize": "2.1 GB",
+      "requirements": {
+        "min": "Intel i5, 8GB RAM, GTX 1060",
+        "recommended": "Intel i7, 16GB RAM, RTX 3070"
+      }
+    },
+    {
+      "id": "beamng-rally-d-series",
+      "title": "D-Series Rally Raid - BeamNG.drive",
+      "author": "Offroad Masters",
+      "version": "1.5.3",
+      "game": "beamng",
+      "category": "car",
+      "type": "realistic",
+      "releaseDate": "2024-01-10",
+      "lastUpdated": "2024-03-12",
+      "rating": 4.8,
+      "downloads": 9870,
+      "badges": [
+        "tested",
+        "stable",
+        "optimized"
+      ],
+      "description": "Préparation rallye-raid complète pour la D-Series avec transmission intégrale et suspension à long débattement.",
+      "longDescription": "<p>Transformez votre D-Series en une machine de rallye-raid prête à affronter les déserts et chemins les plus extrêmes. Ce mod inclut une transmission intégrale personnalisable, des suspensions à long débattement avec réservoirs à gaz, et une carrosserie renforcée avec protections sous châssis.</p><p>Le moteur diesel 4.0L a été modifié pour développer 280 chevaux et 650 Nm de couple, avec une courbe de puissance adaptée aux basses vitesses. La boîte de vitesses à 6 rapports inclut une réduction additionnelle pour les terrains extrêmes.</p>",
+      "changelog": [
+        {
+          "version": "1.5.3",
+          "date": "2024-03-12",
+          "description": "Correction du comportement 4x4 à basse vitesse"
+        }
+      ],
+      "specifications": [
+        {
+          "name": "Moteur",
+          "value": "4.0L Diesel Turbo",
+          "notes": "Intercooler amélioré, filtre à air snorkel"
+        }
+      ],
+      "compatibility": [
+        "BeamNG.drive 0.29 ou supérieur",
+        "Compatible avec les cartes désert"
+      ],
+      "performance": {
+        "fpsImpact": "5-7%",
+        "stability": "Excellent"
+      },
+      "images": [
+        "https://i.goopics.net/3ZVVq.png"
+      ],
+      "fileSize": "180 MB",
+      "requirements": {
+        "min": "Intel i5, 8GB RAM, GTX 1060",
+        "recommended": "Intel i7, 16GB RAM, RTX 3060"
+      }
+    },
+    {
+      "id": "ets2-scania-nextgen-tunning",
+      "title": "Scania NextGen Tuning Pack - Euro Truck Simulator 2",
+      "author": "ScaniaTuners Team",
+      "version": "2.4.1",
+      "game": "ets2",
+      "category": "truck",
+      "type": "realistic",
+      "releaseDate": "2024-02-05",
+      "lastUpdated": "2024-03-14",
+      "rating": 4.6,
+      "downloads": 23410,
+      "badges": [
+        "tested",
+        "stable",
+        "recommended"
+      ],
+      "description": "Pack de tuning complet pour les Scania NextGen avec pièces exclusives et personnalisations réalistes.",
+      "longDescription": "<p>Plus de 150 nouvelles pièces de tuning pour les Scania NextGen, incluant des jantes exclusives, kits carrosserie, échappements chromés, intérieurs sur mesure et éclairages LED avancés. Toutes les pièces sont basées sur des modèles réels disponibles sur le marché.</p>",
+      "changelog": [
+        {
+          "version": "2.4.1",
+          "date": "2024-03-14",
+          "description": "Ajout de 12 nouvelles jantes"
+        }
+      ],
+      "specifications": [
+        {
+          "name": "Pièces totales",
+          "value": "156",
+          "notes": "Jantes, kits carrosserie, intérieurs"
+        }
+      ],
+      "compatibility": [
+        "ETS2 1.48 ou supérieur",
+        "DLC Scania NextGen requis"
+      ],
+      "performance": {
+        "fpsImpact": "2-4%",
+        "stability": "Très bon"
+      },
+      "images": [
+        "https://i.ytimg.com/vi/hg0tSCBZ8i4/maxresdefault.jpg"
+      ],
+      "fileSize": "320 MB",
+      "requirements": {
+        "min": "Intel i3, 6GB RAM, GTX 750 Ti",
+        "recommended": "Intel i5, 8GB RAM, GTX 1660"
+      }
+    },
+    {
+      "id": "assetto-ferrari-sf90-xx",
+      "title": "Ferrari SF90 XX Stradale - Assetto Corsa",
+      "author": "Virtual Car Factory",
+      "version": "1.2.0",
+      "game": "assetto",
+      "category": "car",
+      "type": "realistic",
+      "releaseDate": "2024-03-01",
+      "lastUpdated": "2024-03-18",
+      "rating": 4.9,
+      "downloads": 15680,
+      "badges": [
+        "tested",
+        "optimized",
+        "recommended"
+      ],
+      "description": "Modèle haute fidélité de la Ferrari SF90 XX Stradale avec physique avancée et sonorités authentiques.",
+      "longDescription": "<p>Reproduction fidèle de la supercar hybride Ferrari SF90 XX Stradale avec son V8 biturbo de 780 ch combiné à trois moteurs électriques pour un total de 1016 ch. Le mod inclut des animations fonctionnelles pour l'aileron actif, les phares LED matriciels et l'interface numérique du cockpit.</p>",
+      "changelog": [
+        {
+          "version": "1.2.0",
+          "date": "2024-03-18",
+          "description": "Amélioration de la physique hybride"
+        }
+      ],
+      "specifications": [
+        {
+          "name": "Puissance",
+          "value": "1016 ch",
+          "notes": "Combina thermique + électrique"
+        }
+      ],
+      "compatibility": [
+        "Assetto Corsa 1.16",
+        "CSP 0.1.79 minimum"
+      ],
+      "performance": {
+        "fpsImpact": "4-6%",
+        "stability": "Excellent"
+      },
+      "images": [
+        "https://cdn.assettoworld.com/asw/e083b04910df9949c14fc6a43febffbd/cky_ferrari_sf90xx/preview1.jpg?w=828"
+      ],
+      "fileSize": "450 MB",
+      "requirements": {
+        "min": "Intel i5, 8GB RAM, GTX 1070",
+        "recommended": "Intel i7, 16GB RAM, RTX 3070"
+      }
+    },
+    {
+      "id": "beamng-moon-gravity",
+      "title": "Moon Gravity Mod - BeamNG.drive",
+      "author": "Physics Experiments",
+      "version": "1.0.2",
+      "game": "beamng",
+      "category": "physics",
+      "type": "experimental",
+      "releaseDate": "2024-02-14",
+      "lastUpdated": "2024-02-20",
+      "rating": 4.3,
+      "downloads": 5430,
+      "badges": [
+        "experimental"
+      ],
+      "description": "Expérimentez la gravité lunaire (1/6 de la gravité terrestre) dans BeamNG.drive.",
+      "longDescription": "<p>Modifiez la gravité du jeu pour simuler les conditions lunaires. Parfait pour des expériences physiques amusantes et des cascades impossibles sur Terre. Inclut des ajustements réalistes de la physique des pneus en environnement à faible gravité.</p>",
+      "images": [
+        "https://i.ytimg.com/vi/YxVoYQseI14/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLDR_zAjQ72DwpJnj8oWiKGIDnIwfQ"
+      ],
+      "fileSize": "5 MB",
+      "requirements": {
+        "min": "Intel i5, 8GB RAM, GTX 1060",
+        "recommended": "Intel i7, 16GB RAM, RTX 3060"
+      }
+    },
+    {
+      "id": "ets2-promods",
+      "title": "ProMods Europe - Euro Truck Simulator 2",
+      "author": "ProMods Team",
+      "version": "2.67",
+      "game": "ets2",
+      "category": "map",
+      "type": "realistic",
+      "releaseDate": "2024-02-28",
+      "lastUpdated": "2024-03-10",
+      "rating": 4.9,
+      "downloads": 892500,
+      "badges": [
+        "tested",
+        "stable",
+        "recommended",
+        "essential"
+      ],
+      "description": "Extension massive de la carte européenne avec pays et villes supplémentaires, routes redessinées.",
+      "longDescription": "<p>La carte ProMods étend considérablement l'Europe d'ETS2 avec de nouveaux pays (Islande, Chypre, régions russes), des centaines de nouvelles villes, des autoroutes réalistes et des paysages redessinés avec une précision géographique.</p>",
+      "images": [
+        "https://i.redd.it/bzlvkl0o1ure1.png"
+      ],
+      "fileSize": "8.2 GB",
+      "requirements": {
+        "min": "Intel i5, 8GB RAM, GTX 1060",
+        "recommended": "Intel i7, 16GB RAM, RTX 3060"
+      }
+    },
+    {
+      "id": "assetto-japanese-pack",
+      "title": "Japanese Cars Pack - Assetto Corsa",
+      "author": "JDMPack Team",
+      "version": "3.2.1",
+      "game": "assetto",
+      "category": "pack",
+      "type": "realistic",
+      "releaseDate": "2024-01-25",
+      "lastUpdated": "2024-03-05",
+      "rating": 4.7,
+      "downloads": 32760,
+      "badges": [
+        "tested",
+        "optimized"
+      ],
+      "description": "Pack de 15 voitures japonaises classiques et modernes, des années 90 à aujourd'hui.",
+      "longDescription": "<p>Collection de 15 voitures japonaises iconiques incluant Nissan Skyline R34, Toyota Supra MK4, Mazda RX-7, Honda NSX, Subaru Impreza STI, Mitsubishi Lancer Evo, et autres légendes JDM. Toutes avec modèles 3D détaillés et physique précise.</p>",
+      "images": [
+        "https://gaming-cdn.com/images/products/3349/orig/assetto-corsa-japanese-pack-pc-jeu-steam-cover.jpg?v=1720608643"
+      ],
+      "fileSize": "2.8 GB",
+      "requirements": {
+        "min": "Intel i5, 8GB RAM, GTX 1060",
+        "recommended": "Intel i7, 16GB RAM, RTX 3070"
+      }
+    },
+    {
+      "id": "beamng-crash-arena",
+      "title": "Crash Test Arena - BeamNG.drive",
+      "author": "Destruction Lab",
+      "version": "1.8.3",
+      "game": "beamng",
+      "category": "map",
+      "type": "fun",
+      "releaseDate": "2024-02-10",
+      "lastUpdated": "2024-03-08",
+      "rating": 4.5,
+      "downloads": 23450,
+      "badges": [
+        "tested",
+        "fun"
+      ],
+      "description": "Arène spécialement conçue pour les tests de crash avec obstacles variés et plateformes destructibles.",
+      "longDescription": "<p>Cette carte inclut 10 zones différentes pour tester la déformation des véhicules : mur de béton progressif, chute depuis hauteur variable, crash test à différentes vitesses, zone de tonneaux, et bien plus. Parfait pour les amateurs de physique de destruction.</p>",
+      "images": [
+        "https://i.ytimg.com/vi/ri-yhu9yPM8/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLBltc6wvbzjCAE4GGAz2J5eJ3t_FA"
+      ],
+      "fileSize": "85 MB",
+      "requirements": {
+        "min": "Intel i5, 8GB RAM, GTX 1060",
+        "recommended": "Intel i7, 16GB RAM, RTX 3060"
+      }
+    },
+    {
+      "id": "ets2-real-weather",
+      "title": "Realistic Weather Mod - ETS2/ATS",
+      "author": "Weather Systems",
+      "version": "4.2.0",
+      "game": "ets2",
+      "category": "graphics",
+      "type": "realistic",
+      "releaseDate": "2024-03-01",
+      "lastUpdated": "2024-03-20",
+      "rating": 4.8,
+      "downloads": 56780,
+      "badges": [
+        "tested",
+        "stable",
+        "recommended"
+      ],
+      "description": "Système météorologique avancé avec transitions réalistes, nouveaux effets de pluie et de brouillard.",
+      "longDescription": "<p>Overhaul complet du système météo avec 12 types de précipitations, brouillard variable selon l'altitude, accumulation de neige réaliste, flaques dynamiques, éclairs et tonnerre, et transitions météo progressives basées sur la localisation géographique.</p>",
+      "images": [
+        "https://i.ytimg.com/vi/qp8jL5kQ_HQ/maxresdefault.jpg"
+      ],
+      "fileSize": "650 MB",
+      "requirements": {
+        "min": "Intel i5, 8GB RAM, GTX 1660",
+        "recommended": "Intel i7, 16GB RAM, RTX 3060"
+      }
+    },
+    {
+      "id": "assetto-shutoko-revival",
+      "title": "Shutoko Revival Project - Assetto Corsa",
+      "author": "SRP Team",
+      "version": "0.9.5",
+      "game": "assetto",
+      "category": "track",
+      "type": "realistic",
+      "releaseDate": "2024-02-15",
+      "lastUpdated": "2024-03-16",
+      "rating": 4.9,
+      "downloads": 45670,
+      "badges": [
+        "tested",
+        "optimized"
+      ],
+      "description": "Reconstruction de l'autoroute de Tokyo (Shuto Expressway) avec trafic AI et environnements détaillés.",
+      "longDescription": "<p>Mod massif recréant plus de 100km d'autoroutes tokyoïtes avec échangeurs complexes, bâtiments réalistes, éclairage nocturne authentique et système de trafic AI dense. Inclut différentes conditions horaires et météorologiques.</p>",
+      "images": [
+        "https://i.ytimg.com/vi/TyWa2lnNzUY/maxresdefault.jpg"
+      ],
+      "fileSize": "12.4 GB",
+      "requirements": {
+        "min": "Intel i7, 16GB RAM, RTX 3070",
+        "recommended": "Intel i7, 32GB RAM, RTX 4080"
+      }
+    },
+    {
+      "id": "beamng-realistic-damage",
+      "title": "Realistic Damage Overhaul - BeamNG.drive",
+      "author": "Damage Physics Team",
+      "version": "2.3.1",
+      "game": "beamng",
+      "category": "physics",
+      "type": "realistic",
+      "releaseDate": "2024-01-30",
+      "lastUpdated": "2024-03-14",
+      "rating": 4.6,
+      "downloads": 18920,
+      "badges": [
+        "tested",
+        "realistic"
+      ],
+      "description": "Améliore le système de dégâts avec plus de points de déformation, rupture de composants réaliste.",
+      "longDescription": "<p>Overhaul du système de dégâts ajoutant plus de 200 nouveaux points de déformation par véhicule, rupture progressive des composants mécaniques, déchirure de la tôle plus réaliste, et effets de fatigue matérielle après impacts répétés.</p>",
+      "images": [
+        "https://i.ytimg.com/vi/LxXAiO_-7uw/maxresdefault.jpg"
+      ],
+      "fileSize": "75 MB",
+      "requirements": {
+        "min": "Intel i5, 8GB RAM, GTX 1060",
+        "recommended": "Intel i7, 16GB RAM, RTX 3060"
+      }
+    },
+    {
+      "id": "ets2-sound-overhaul",
+      "title": "Engine Sound Overhaul - ETS2",
+      "author": "Sound Design Studio",
+      "version": "3.1.2",
+      "game": "ets2",
+      "category": "sound",
+      "type": "realistic",
+      "releaseDate": "2024-02-22",
+      "lastUpdated": "2024-03-12",
+      "rating": 4.7,
+      "downloads": 43210,
+      "badges": [
+        "tested",
+        "recommended"
+      ],
+      "description": "Remplace tous les sons moteurs par des enregistrements haute qualité de camions réels.",
+      "longDescription": "<p>Collection complète de sons moteur enregistrés sur des camions réels dans différentes conditions : intérieur/extérieur, charges variables, régimes différents. Inclut également des sons d'ambiance améliorés et effets audio environnementaux.</p>",
+      "images": [
+        "https://i.ytimg.com/vi/i-jwIhDh_EU/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLBwg6irYYm0P-cSI2KCURkwK_lrUw"
+      ],
+      "fileSize": "1.2 GB",
+      "requirements": {
+        "min": "Intel i3, 4GB RAM, carte son standard",
+        "recommended": "Intel i5, 8GB RAM, système audio 5.1"
+      }
+    },
+    {
+      "id": "assetto-vr-optimization",
+      "title": "VR Optimization Pack - Assetto Corsa",
+      "author": "VR Experience Team",
+      "version": "1.4.3",
+      "game": "assetto",
+      "category": "utility",
+      "type": "optimization",
+      "releaseDate": "2024-02-05",
+      "lastUpdated": "2024-03-18",
+      "rating": 4.8,
+      "downloads": 28760,
+      "badges": [
+        "tested",
+        "optimized",
+        "vr"
+      ],
+      "description": "Optimisations spécifiques pour la réalité virtuelle : interface, performances et confort visuel.",
+      "longDescription": "<p>Collection de réglages et modifications pour améliorer l'expérience VR : interface adaptée, réduction du motion sickness, optimisation des shaders pour le rendu stéréoscopique, et ajustements de performance pour maintenir 90 FPS en VR.</p>",
+      "images": [
+        "https://i.ytimg.com/vi/mPdF5kjWg44/maxresdefault.jpg"
+      ],
+      "fileSize": "45 MB",
+      "requirements": {
+        "min": "Intel i5, 16GB RAM, RTX 3070",
+        "recommended": "Intel i7, 32GB RAM, RTX 4080"
+      }
+    },
+    {
+      "id": "beamng-police-pack",
+      "title": "Police & Emergency Pack - BeamNG.drive",
+      "author": "Emergency Services Modding",
+      "version": "2.0.4",
+      "game": "beamng",
+      "category": "pack",
+      "type": "realistic",
+      "releaseDate": "2024-01-20",
+      "lastUpdated": "2024-03-10",
+      "rating": 4.7,
+      "downloads": 32150,
+      "badges": [
+        "tested",
+        "stable"
+      ],
+      "description": "Ajoute des véhicules de police, pompiers et ambulances avec équipements fonctionnels.",
+      "longDescription": "<p>Pack complet de véhicules d'urgence : voitures de police avec gyrophares et sirènes fonctionnels, camions de pompiers avec échelle et lance à eau, ambulances avec intérieur médical détaillé. Inclut également des scénarios de poursuite et sauvetage.</p>",
+      "images": [
+        "https://www.beamng.com/attachments/ukservicesthingy-png.874978/"
+      ],
+      "fileSize": "420 MB",
+      "requirements": {
+        "min": "Intel i5, 8GB RAM, GTX 1060",
+        "recommended": "Intel i7, 16GB RAM, RTX 3060"
+      }
+    },
+    {
+      "id": "ets2-real-physics",
+      "title": "Realistic Physics Mod - ETS2",
+      "author": "Physics Overhaul Team",
+      "version": "6.2.1",
+      "game": "ets2",
+      "category": "physics",
+      "type": "realistic",
+      "releaseDate": "2024-02-18",
+      "lastUpdated": "2024-03-15",
+      "rating": 4.5,
+      "downloads": 38920,
+      "badges": [
+        "tested",
+        "realistic"
+      ],
+      "description": "Physique retravaillée pour une expérience de conduite plus réaliste : poids, suspension, freinage.",
+      "longDescription": "<p>Overhaul complet de la physique : poids réel des remorques chargées, comportement de suspension réaliste, effet du vent latéral, adhérence variable selon la météo, freinage progressif avec risque de blocage, et fatigue du conducteur simulée.</p>",
+      "images": [
+        "https://images.steamusercontent.com/ugc/5078403134297641992/055637B0E59494FF7A11BB8A7C0CF7CCCB7435FD/?imw=512&&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=false"
+      ],
+      "fileSize": "25 MB",
+      "requirements": {
+        "min": "Intel i5, 8GB RAM, GTX 1060",
+        "recommended": "Intel i7, 16GB RAM, RTX 3060"
+      }
+    },
+    {
+      "id": "assetto-lemans-2023",
+      "title": "24 Hours of Le Mans 2023 - Assetto Corsa",
+      "author": "Endurance Racing Mods",
+      "version": "1.5.2",
+      "game": "assetto",
+      "category": "track",
+      "type": "realistic",
+      "releaseDate": "2024-02-25",
+      "lastUpdated": "2024-03-17",
+      "rating": 4.9,
+      "downloads": 29870,
+      "badges": [
+        "tested",
+        "optimized"
+      ],
+      "description": "Circuit des 24 Heures du Mans avec modifications 2023 et ambiance complète jour/nuit.",
+      "longDescription": "<p>Circuit du Mans avec toutes les modifications apportées pour l'édition 2023, y compris les nouveaux vibreurs et modifications de sécurité. Inclut un cycle jour/nuit complet de 24 minutes (échelle 1:60) avec transitions réalistes, éclairage nocturne des stands, et feux de piste fonctionnels.</p>",
+      "images": [
+        "https://i.ytimg.com/vi/Oqhsa8LTrMw/maxresdefault.jpg"
+      ],
+      "fileSize": "3.2 GB",
+      "requirements": {
+        "min": "Intel i5, 8GB RAM, GTX 1070",
+        "recommended": "Intel i7, 16GB RAM, RTX 3070"
+      }
+    },
+    {
+      "id": "beamng-graphics-overhaul",
+      "title": "Graphical Overhaul - BeamNG.drive",
+      "author": "Visual Enhancements",
+      "version": "3.2.0",
+      "game": "beamng",
+      "category": "graphics",
+      "type": "realistic",
+      "releaseDate": "2024-02-28",
+      "lastUpdated": "2024-03-19",
+      "rating": 4.6,
+      "downloads": 45630,
+      "badges": [
+        "tested",
+        "optimized"
+      ],
+      "description": "Améliorations graphiques complètes : textures, éclairage, effets météo et post-processing.",
+      "longDescription": "<p>Overhaul visuel complet : textures 4K pour tous les véhicules et environnements, système d'éclairage physique amélioré, effets météo avancés (pluie dynamique, brouillard volumétrique), reflets réalistes, ombres soft, et effets de post-processing ajustables.</p>",
+      "images": [
+        "https://i.ytimg.com/vi/IEaj0ndc-H8/maxresdefault.jpg"
+      ],
+      "fileSize": "2.5 GB",
+      "requirements": {
+        "min": "Intel i5, 8GB RAM, RTX 2060",
+        "recommended": "Intel i7, 16GB RAM, RTX 4070"
+      }
+    },
+    {
+      "id": "ets2-truckersmp",
+      "title": "TruckersMP Multiplayer - ETS2/ATS",
+      "author": "TruckersMP Team",
+      "version": "2.5.8",
+      "game": "ets2",
+      "category": "multiplayer",
+      "type": "utility",
+      "releaseDate": "2024-02-12",
+      "lastUpdated": "2024-03-20",
+      "rating": 4.8,
+      "downloads": 2874500,
+      "badges": [
+        "tested",
+        "stable",
+        "essential"
+      ],
+      "description": "Mode multijoueur massif avec des milliers de joueurs sur les mêmes serveurs.",
+      "longDescription": "<p>Plateforme multijoueur officieuse permettant de rouler avec des milliers d'autres joueurs en temps réel. Inclut système de convoi, radio CB, règles de conduite, modération active, et serveurs dédiés avec différentes règles (simulation, arcade).</p>",
+      "images": [
+        "https://www.ets2world.com/wp-content/uploads/2022/07/man-tgx-euro-6-custom-tuning-for-multiplayer-1.44.x-5Btruckersmp-5D-v1.0-ets2-1.jpg"
+      ],
+      "fileSize": "150 MB",
+      "requirements": {
+        "min": "Intel i5, 8GB RAM, connexion internet stable",
+        "recommended": "Intel i7, 16GB RAM, connexion fibre"
+      }
+    },
+    {
+      "id": "assetto-competizione-unofficial",
+      "title": "Unofficial GT3 Pack - Assetto Corsa",
+      "author": "GT Modding Collective",
+      "version": "2.1.3",
+      "game": "assetto",
+      "category": "pack",
+      "type": "realistic",
+      "releaseDate": "2024-02-08",
+      "lastUpdated": "2024-03-14",
+      "rating": 4.7,
+      "downloads": 54320,
+      "badges": [
+        "tested",
+        "optimized"
+      ],
+      "description": "Pack de voitures GT3 non officielles avec physique proche d'Assetto Corsa Competizione.",
+      "longDescription": "<p>Collection de 12 voitures GT3 non disponibles officiellement dans ACC, modélisées avec le même niveau de détail et de précision physique. Inclut des modèles récents de Ferrari, Porsche, Mercedes, BMW, et autres, avec systèmes électroniques avancés et réglages complets.</p>",
+      "images": [
+        "https://i.ytimg.com/vi/44NmJpXmlJA/maxresdefault.jpg"
+      ],
+      "fileSize": "3.8 GB",
+      "requirements": {
+        "min": "Intel i5, 8GB RAM, GTX 1070",
+        "recommended": "Intel i7, 16GB RAM, RTX 3070"
+      }
+    },
+    {
+      "id": "beamng-career-mode",
+      "title": "Career Mode Extension - BeamNG.drive",
+      "author": "Gameplay Overhaul",
+      "version": "1.3.2",
+      "game": "beamng",
+      "category": "gameplay",
+      "type": "extension",
+      "releaseDate": "2024-02-14",
+      "lastUpdated": "2024-03-16",
+      "rating": 4.6,
+      "downloads": 28760,
+      "badges": [
+        "tested",
+        "stable"
+      ],
+      "description": "Ajoute un mode carrière complet avec économie, missions et progression.",
+      "longDescription": "<p>Extension ajoutant un mode carrière profond : achetez et vendez des véhicules, effectuez des missions (livraison, taxi, course, sauvetage), gérez vos finances, recrutez des pilotes, et développez votre garage. Plus de 100 heures de contenu avec système de réputation et événements dynamiques.</p>",
+      "images": [
+        "https://i.ytimg.com/vi/ERRC6P0xhOw/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLDqGJvYqarzGPv4daDKbsHEXaRfbA"
+      ],
+      "fileSize": "120 MB",
+      "requirements": {
+        "min": "Intel i5, 8GB RAM, GTX 1060",
+        "recommended": "Intel i7, 16GB RAM, RTX 3060"
+      }
+    }
+  ]
+}
